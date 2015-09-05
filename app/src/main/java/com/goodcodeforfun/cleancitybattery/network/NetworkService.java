@@ -4,6 +4,7 @@ import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 
+import com.activeandroid.ActiveAndroid;
 import com.goodcodeforfun.cleancitybattery.CleanCityApplication;
 import com.goodcodeforfun.cleancitybattery.model.Location;
 
@@ -101,8 +102,15 @@ public class NetworkService extends IntentService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if (locationsResponse != null) {
-            for (Location location : locationsResponse.body()) {
+        if (null != locationsResponse) {
+            ActiveAndroid.beginTransaction();
+            try {
+                for (Location location : locationsResponse.body()) {
+                    location.save();
+                }
+                ActiveAndroid.setTransactionSuccessful();
+            } finally {
+                ActiveAndroid.endTransaction();
             }
         }
     }

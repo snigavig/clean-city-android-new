@@ -1,8 +1,13 @@
 package com.goodcodeforfun.cleancitybattery;
 
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -10,6 +15,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.activeandroid.content.ContentProvider;
+import com.goodcodeforfun.cleancitybattery.model.Location;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -22,9 +29,37 @@ import java.lang.ref.WeakReference;
 
 public class PointsMapFragment extends Fragment implements OnMapReadyCallback {
 
+    private static final int LOCATION_LOADER_ID = 1234;
+    private final LoaderManager.LoaderCallbacks<Cursor> mLocationLoaderCallbacks = new LoaderManager.LoaderCallbacks<Cursor>() {
+
+        @Override
+        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+
+            return new CursorLoader(getActivity(),
+                    ContentProvider.createUri(Location.class, null),
+                    null, null, null, null
+            );
+
+        }
+
+        @Override
+        public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+            if (data.getCount() != 0) {
+                for (data.moveToFirst(); !data.isAfterLast(); data.moveToNext()) {
+                    Log.d("!!!!!!!!!!!!!LAT", data.getString(data.getColumnIndex(Location.COLUMN_LATITUDE)));
+                    Log.d("!!!!!!!!!!!!!LON", data.getString(data.getColumnIndex(Location.COLUMN_LONGTITUDE)));
+                }
+            }
+        }
+
+        @Override
+        public void onLoaderReset(Loader<Cursor> loader) {
+        }
+    };
     private WeakReference<MainActivity> mainActivityWeakReference;
     private GoogleMap mGoogleMap;
     private MapView mapView;
+    private LoaderManager mLoaderManager;
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -68,6 +103,8 @@ public class PointsMapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        mLoaderManager = getActivity().getSupportLoaderManager();
+        mLoaderManager.initLoader(LOCATION_LOADER_ID, null, mLocationLoaderCallbacks);
     }
 
 

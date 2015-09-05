@@ -3,6 +3,7 @@ package com.goodcodeforfun.cleancitybattery;
 import android.app.Application;
 import android.content.Context;
 
+import com.activeandroid.ActiveAndroid;
 import com.goodcodeforfun.cleancitybattery.network.CleanCityService;
 import com.goodcodeforfun.cleancitybattery.util.SharedPreferencesHelper;
 
@@ -44,5 +45,6 @@ public class CleanCityApplication extends Application {
                 .build();
 
         networkService = retrofit.create(CleanCityService.class);
+        ActiveAndroid.initialize(this);
     }
 }

@@ -1,9 +1,18 @@
 package com.goodcodeforfun.cleancitybattery.model;
 
+import android.provider.BaseColumns;
+
+import com.activeandroid.Model;
+import com.activeandroid.annotation.Column;
+import com.activeandroid.annotation.Table;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Location {
+@Table(name = "Locations", id = BaseColumns._ID)
+public class Location extends Model {
+
+    public static final String COLUMN_LATITUDE = "Latitude";
+    public static final String COLUMN_LONGTITUDE = "Longtitude";
 
     @SerializedName("_id")
     @Expose
@@ -16,8 +25,10 @@ public class Location {
     @Expose
     private String created;
     @Expose
+    @Column(name = COLUMN_LATITUDE)
     private String latitude;
     @Expose
+    @Column(name = COLUMN_LONGTITUDE)
     private String longitude;
     @Expose
     private String name;
@@ -25,14 +36,14 @@ public class Location {
     /**
      * @return The Id
      */
-    public String getId() {
+    public String getApiId() {
         return Id;
     }
 
     /**
      * @param Id The _id
      */
-    public void setId(String Id) {
+    public void setApiId(String Id) {
         this.Id = Id;
     }
 
