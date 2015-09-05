@@ -62,23 +62,33 @@ public class MainActivity extends AppCompatActivity implements
                 R.string.close);
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
-
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.content, mPointsMapFragment)
+                .commit();
         navigate(mNavItemId);
+    }
+
+    public void showList() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.content, mPointsListFragment)
+                .commit();
+    }
+
+    public void showMap() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.content, mPointsMapFragment)
+                .commit();
     }
 
     private void navigate(final int itemId) {
         switch (itemId) {
             case R.id.drawer_item_1:
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.content, mPointsMapFragment)
-                        .commit();
                 break;
             case R.id.drawer_item_2:
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.content, mPointsListFragment)
-                        .commit();
+                //
                 break;
             default:
                 // ignore

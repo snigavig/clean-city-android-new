@@ -1,7 +1,8 @@
 <resources>
     <string name="app_name">Чисте місто: Батарейки</string>
     <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_list_view">List view</string>
+    <string name="action_map_view">Map view</string>
     <string name="dummy_username">Akash Bangadabad</string>
     <string name="dummy_email">akash@gmail.com</string>
     <string name="item_1">Батарейки</string>

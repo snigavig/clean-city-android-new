@@ -4,6 +4,9 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -24,8 +27,30 @@ public class PointsMapFragment extends Fragment implements OnMapReadyCallback {
     private MapView mapView;
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        //menu.clear();
+        inflater.inflate(R.menu.menu_main, menu);
+        menu.findItem(R.id.action_map_view).setVisible(false);
+        menu.findItem(R.id.action_list_view).setVisible(true);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_list_view) {
+            MainActivity activity = mainActivityWeakReference.get();
+            activity.showList();
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.setHasOptionsMenu(true);
         mainActivityWeakReference = new WeakReference<>((MainActivity) getActivity());
     }
 
@@ -43,7 +68,6 @@ public class PointsMapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        MainActivity activity = mainActivityWeakReference.get();
     }
 
 
