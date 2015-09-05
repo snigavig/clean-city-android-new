@@ -1,15 +1,14 @@
 package com.goodcodeforfun.cleancitybattery;
 
 import android.content.res.Configuration;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.NavigationView;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity implements
@@ -19,18 +18,16 @@ public class MainActivity extends AppCompatActivity implements
     private static final String NAV_ITEM_ID = "navItemId";
 
     private final Handler mDrawerActionHandler = new Handler();
+    private final PointsMapFragment mPointsMapFragment = new PointsMapFragment();
+    private final PointsListFragment mPointsListFragment = new PointsListFragment();
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mDrawerToggle;
+    //private final EventsFragment mEventsFragment = new EventsFragment();
+    private int mNavItemId;
 
     public DrawerLayout getmDrawerLayout() {
         return mDrawerLayout;
     }
-
-    private DrawerLayout mDrawerLayout;
-    private ActionBarDrawerToggle mDrawerToggle;
-
-    //private final AddFriendFragment mAddFriendFragment = new AddFriendFragment();
-    //private final ContactsFragment mContactsFragment = new ContactsFragment();
-    //private final EventsFragment mEventsFragment = new EventsFragment();
-    private int mNavItemId;
 
     public ActionBarDrawerToggle getDrawerToggle() {
         return mDrawerToggle;
@@ -72,16 +69,16 @@ public class MainActivity extends AppCompatActivity implements
     private void navigate(final int itemId) {
         switch (itemId) {
             case R.id.drawer_item_1:
-//                getSupportFragmentManager()
-//                        .beginTransaction()
-//                        .replace(R.id.content, mContactsFragment)
-//                        .commit();
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.content, mPointsMapFragment)
+                        .commit();
                 break;
             case R.id.drawer_item_2:
-//                getSupportFragmentManager()
-//                        .beginTransaction()
-//                        .replace(R.id.content, mEventsFragment)
-//                        .commit();
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.content, mPointsListFragment)
+                        .commit();
                 break;
             default:
                 // ignore
