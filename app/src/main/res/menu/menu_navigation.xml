@@ -9,5 +9,13 @@
             android:id="@+id/drawer_item_2"
             android:icon="@android:drawable/arrow_down_float"
             android:title="@string/item_2"/>
+        <item
+            android:id="@+id/drawer_item_3"
+            android:icon="@android:drawable/ic_menu_mapmode"
+            android:title="@string/item_3" />
+        <item
+            android:id="@+id/drawer_item_4"
+            android:icon="@android:drawable/presence_online"
+            android:title="@string/item_4" />
     </group>
 </menu>

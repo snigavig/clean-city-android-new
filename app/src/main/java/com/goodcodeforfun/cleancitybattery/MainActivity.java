@@ -1,5 +1,6 @@
 package com.goodcodeforfun.cleancitybattery;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
@@ -10,6 +11,8 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+
+import com.goodcodeforfun.cleancitybattery.network.NetworkService;
 
 public class MainActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener {
@@ -67,6 +70,9 @@ public class MainActivity extends AppCompatActivity implements
                 .replace(R.id.content, mPointsMapFragment)
                 .commit();
         navigate(mNavItemId);
+        Intent mServiceIntent = new Intent(this, NetworkService.class);
+        mServiceIntent.setAction(NetworkService.ACTION_GET_LIST_LOCATIONS);
+        startService(mServiceIntent);
     }
 
     public void showList() {
@@ -88,6 +94,12 @@ public class MainActivity extends AppCompatActivity implements
             case R.id.drawer_item_1:
                 break;
             case R.id.drawer_item_2:
+                //
+                break;
+            case R.id.drawer_item_3:
+                //
+                break;
+            case R.id.drawer_item_4:
                 //
                 break;
             default:
