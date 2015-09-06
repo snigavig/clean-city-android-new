@@ -88,8 +88,10 @@ public class NetworkService extends IntentService {
 
         if (null != location) {
             Call<Location> locationCall = CleanCityApplication.getInstance().getNetworkService().addLocation(location);
+            location.delete();
             try {
-                locationCall.execute();
+                Response<Location> locationsResponse = locationCall.execute();
+                locationsResponse.body().save();
             } catch (IOException e) {
                 e.printStackTrace();
             }

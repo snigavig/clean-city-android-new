@@ -15,10 +15,12 @@ public class Location extends Model {
     public static final String COLUMN_LATITUDE = "Latitude";
     public static final String COLUMN_LONGTITUDE = "Longtitude";
     public static final String COLUMN_TYPE = "Type";
+    public static final String COLUMN_API_ID = "ApiId";
 
     @SerializedName("_id")
     @Expose
-    private String Id;
+    @Column(name = COLUMN_API_ID, unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
+    private String apiId = "";
     @Expose
     private User user;
     @SerializedName("__v")
@@ -63,18 +65,18 @@ public class Location extends Model {
      * @return The Id
      */
     public String getApiId() {
-        return Id;
+        return apiId;
     }
 
     /**
      * @param Id The _id
      */
     public void setApiId(String Id) {
-        this.Id = Id;
+        this.apiId = Id;
     }
 
-    public Location withId(String Id) {
-        this.Id = Id;
+    public Location withId(String apiId) {
+        this.apiId = apiId;
         return this;
     }
 

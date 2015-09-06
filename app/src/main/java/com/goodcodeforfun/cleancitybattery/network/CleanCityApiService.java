@@ -12,7 +12,7 @@ import retrofit.http.POST;
 /**
  * Created by snigavig on 05.09.15.
  */
-public interface CleanCityService {
+public interface CleanCityApiService {
     @GET("/locations")
     Call<List<Location>> listLocations();
 

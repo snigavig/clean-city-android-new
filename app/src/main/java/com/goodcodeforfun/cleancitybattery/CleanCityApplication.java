@@ -4,7 +4,7 @@ import android.app.Application;
 import android.content.Context;
 
 import com.activeandroid.ActiveAndroid;
-import com.goodcodeforfun.cleancitybattery.network.CleanCityService;
+import com.goodcodeforfun.cleancitybattery.network.CleanCityApiService;
 import com.goodcodeforfun.cleancitybattery.util.SharedPreferencesHelper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -20,13 +20,13 @@ public class CleanCityApplication extends Application {
     private static Context mContext;
     private static SharedPreferencesHelper mSharedPreferencesHelper;
     private static CleanCityApplication mInstance;
-    private CleanCityService networkService;
+    private CleanCityApiService networkService;
 
     public static CleanCityApplication getInstance() {
         return mInstance;
     }
 
-    public CleanCityService getNetworkService() {
+    public CleanCityApiService getNetworkService() {
         return networkService;
     }
 
@@ -46,7 +46,7 @@ public class CleanCityApplication extends Application {
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
 
-        networkService = retrofit.create(CleanCityService.class);
+        networkService = retrofit.create(CleanCityApiService.class);
         ActiveAndroid.initialize(this);
     }
 }

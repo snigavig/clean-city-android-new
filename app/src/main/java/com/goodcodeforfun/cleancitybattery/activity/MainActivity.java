@@ -1,10 +1,14 @@
-package com.goodcodeforfun.cleancitybattery;
+package com.goodcodeforfun.cleancitybattery.activity;
 
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -12,6 +16,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
+import com.activeandroid.content.ContentProvider;
+import com.goodcodeforfun.cleancitybattery.R;
+import com.goodcodeforfun.cleancitybattery.fragment.PointsListFragment;
+import com.goodcodeforfun.cleancitybattery.fragment.PointsMapFragment;
 import com.goodcodeforfun.cleancitybattery.model.Location;
 import com.goodcodeforfun.cleancitybattery.network.NetworkService;
 
@@ -20,14 +28,39 @@ public class MainActivity extends AppCompatActivity implements
 
     private static final long DRAWER_CLOSE_DELAY_MS = 250;
     private static final String NAV_ITEM_ID = "navItemId";
-
+    private static final int LOCATION_LOADER_ID = 1234;
     private final Handler mDrawerActionHandler = new Handler();
     private final PointsMapFragment mPointsMapFragment = new PointsMapFragment();
     private final PointsListFragment mPointsListFragment = new PointsListFragment();
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
-    //private final EventsFragment mEventsFragment = new EventsFragment();
     private int mNavItemId;
+    private LoaderManager mLoaderManager;
+    private LocationType mCurrentLocationType = LocationType.battery;
+    private final LoaderManager.LoaderCallbacks<Cursor> mLocationLoaderCallbacks = new LoaderManager.LoaderCallbacks<Cursor>() {
+
+        @Override
+        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+
+            return new CursorLoader(MainActivity.this,
+                    ContentProvider.createUri(Location.class, null),
+                    null, "Type = ?", new String[]{mCurrentLocationType.toString()}, null
+            );
+
+        }
+
+        @Override
+        public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+            if (data.getCount() != 0) {
+                for (data.moveToFirst(); !data.isAfterLast(); data.moveToNext()) {
+                }
+            }
+        }
+
+        @Override
+        public void onLoaderReset(Loader<Cursor> loader) {
+        }
+    };
 
     public DrawerLayout getmDrawerLayout() {
         return mDrawerLayout;
@@ -75,17 +108,17 @@ public class MainActivity extends AppCompatActivity implements
         mServiceGetIntent.setAction(NetworkService.ACTION_GET_LIST_LOCATIONS);
         startService(mServiceGetIntent);
 
-        Location location = new Location();
-        location.setName("minaname");
-        location.setType("battery");
-        location.setLatitude(51.34);
-        location.setLongitude(24.26);
-        location.save();
+//        Location location = new Location();
+//        location.setName("minaname");
+//        location.setType("battery");
+//        location.setLatitude(51.34);
+//        location.setLongitude(24.26);
+//        location.save();
 
-        Intent mServicePostIntent = new Intent(this, NetworkService.class);
-        mServicePostIntent.setAction(NetworkService.ACTION_POST_LOCATION);
-        mServicePostIntent.putExtra(NetworkService.EXTRA_LOCATION_DB_ID, location.getId().toString());
-        startService(mServicePostIntent);
+//        Intent mServicePostIntent = new Intent(this, NetworkService.class);
+//        mServicePostIntent.setAction(NetworkService.ACTION_POST_LOCATION);
+//        mServicePostIntent.putExtra(NetworkService.EXTRA_LOCATION_DB_ID, location.getId().toString());
+//        startService(mServicePostIntent);
     }
 
     public void showList() {
@@ -105,20 +138,23 @@ public class MainActivity extends AppCompatActivity implements
     private void navigate(final int itemId) {
         switch (itemId) {
             case R.id.drawer_item_1:
+                mCurrentLocationType = LocationType.battery;
                 break;
             case R.id.drawer_item_2:
-                //
+                mCurrentLocationType = LocationType.glass;
                 break;
             case R.id.drawer_item_3:
-                //
+                mCurrentLocationType = LocationType.paper;
                 break;
             case R.id.drawer_item_4:
-                //
+                mCurrentLocationType = LocationType.plastic;
                 break;
             default:
                 // ignore
                 break;
         }
+        if (null != mLoaderManager) //Restart loader only when it is inited
+            mLoaderManager.restartLoader(LOCATION_LOADER_ID, null, mLocationLoaderCallbacks);
     }
 
     @Override
@@ -153,21 +189,6 @@ public class MainActivity extends AppCompatActivity implements
         return super.onOptionsItemSelected(item);
     }
 
-//    @Override
-//    public boolean onOptionsItemSelected(final MenuItem item) {
-//        Log.d("!!!!!!!!!!!!!!!!", String.valueOf(item.getItemId()));
-//
-//        if (mDrawerToggle.isDrawerIndicatorEnabled() &&
-//                mDrawerToggle.onOptionsItemSelected(item)) {
-//            return true;
-//        } else if (item.getItemId() == android.R.id.home &&
-//                getSupportFragmentManager().popBackStackImmediate()) {
-//            return true;
-//        } else {
-//            return super.onOptionsItemSelected(item);
-//        }
-//    }
-
     @Override
     public void onBackPressed() {
         if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
@@ -181,5 +202,16 @@ public class MainActivity extends AppCompatActivity implements
     protected void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(NAV_ITEM_ID, mNavItemId);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mLoaderManager = getSupportLoaderManager();
+        mLoaderManager.initLoader(LOCATION_LOADER_ID, null, mLocationLoaderCallbacks);
+    }
+
+    public enum LocationType {
+        battery, glass, paper, plastic
     }
 }

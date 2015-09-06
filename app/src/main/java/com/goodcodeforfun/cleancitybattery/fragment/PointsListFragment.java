@@ -1,4 +1,4 @@
-package com.goodcodeforfun.cleancitybattery;
+package com.goodcodeforfun.cleancitybattery.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,6 +9,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.goodcodeforfun.cleancitybattery.R;
+import com.goodcodeforfun.cleancitybattery.activity.MainActivity;
 
 import java.lang.ref.WeakReference;
 
