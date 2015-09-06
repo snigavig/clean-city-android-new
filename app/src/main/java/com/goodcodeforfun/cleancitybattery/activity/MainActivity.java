@@ -22,6 +22,10 @@ import com.goodcodeforfun.cleancitybattery.fragment.PointsListFragment;
 import com.goodcodeforfun.cleancitybattery.fragment.PointsMapFragment;
 import com.goodcodeforfun.cleancitybattery.model.Location;
 import com.goodcodeforfun.cleancitybattery.network.NetworkService;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener {
@@ -52,8 +56,15 @@ public class MainActivity extends AppCompatActivity implements
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
             if (data.getCount() != 0) {
+                LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
+                ArrayList<LatLng> mArrayList = new ArrayList<>();
+                LatLng position;
                 for (data.moveToFirst(); !data.isAfterLast(); data.moveToNext()) {
+                    position = new LatLng(data.getDouble(3), data.getDouble(4));
+                    boundsBuilder.include(position);
+                    mArrayList.add(position);
                 }
+                mPointsMapFragment.updateMap(mArrayList, boundsBuilder.build());
             }
         }
 

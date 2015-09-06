@@ -17,9 +17,13 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
@@ -29,6 +33,21 @@ public class PointsMapFragment extends Fragment implements OnMapReadyCallback {
     private WeakReference<MainActivity> mainActivityWeakReference;
     private GoogleMap mGoogleMap;
     private MapView mapView;
+
+    public void updateMap(ArrayList<LatLng> points, LatLngBounds bounds) {
+        if (null != mGoogleMap) {
+            mGoogleMap.clear();
+            for (LatLng point : points
+                    ) {
+                mGoogleMap.addMarker(new MarkerOptions()
+                                .position(point)
+                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+                );
+            }
+//            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, 1000, 1000, 0); //(bounds, padding);
+//            mGoogleMap.animateCamera(cameraUpdate);
+        }
+    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
