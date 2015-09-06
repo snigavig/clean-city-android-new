@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
+import com.goodcodeforfun.cleancitybattery.model.Location;
 import com.goodcodeforfun.cleancitybattery.network.NetworkService;
 
 public class MainActivity extends AppCompatActivity implements
@@ -70,9 +71,21 @@ public class MainActivity extends AppCompatActivity implements
                 .replace(R.id.content, mPointsMapFragment)
                 .commit();
         navigate(mNavItemId);
-        Intent mServiceIntent = new Intent(this, NetworkService.class);
-        mServiceIntent.setAction(NetworkService.ACTION_GET_LIST_LOCATIONS);
-        startService(mServiceIntent);
+        Intent mServiceGetIntent = new Intent(this, NetworkService.class);
+        mServiceGetIntent.setAction(NetworkService.ACTION_GET_LIST_LOCATIONS);
+        startService(mServiceGetIntent);
+
+        Location location = new Location();
+        location.setName("minaname");
+        location.setType("battery");
+        location.setLatitude(51.34);
+        location.setLongitude(24.26);
+        location.save();
+
+        Intent mServicePostIntent = new Intent(this, NetworkService.class);
+        mServicePostIntent.setAction(NetworkService.ACTION_POST_LOCATION);
+        mServicePostIntent.putExtra(NetworkService.EXTRA_LOCATION_DB_ID, location.getId().toString());
+        startService(mServicePostIntent);
     }
 
     public void showList() {

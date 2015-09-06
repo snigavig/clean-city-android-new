@@ -11,8 +11,10 @@ import com.google.gson.annotations.SerializedName;
 @Table(name = "Locations", id = BaseColumns._ID)
 public class Location extends Model {
 
+    public static final String COLUMN_NAME = "Name";
     public static final String COLUMN_LATITUDE = "Latitude";
     public static final String COLUMN_LONGTITUDE = "Longtitude";
+    public static final String COLUMN_TYPE = "Type";
 
     @SerializedName("_id")
     @Expose
@@ -26,12 +28,36 @@ public class Location extends Model {
     private String created;
     @Expose
     @Column(name = COLUMN_LATITUDE)
-    private String latitude;
+    private double latitude;
     @Expose
     @Column(name = COLUMN_LONGTITUDE)
-    private String longitude;
+    private double longitude;
     @Expose
+    @Column(name = COLUMN_NAME)
     private String name;
+    @Expose
+    @Column(name = COLUMN_TYPE)
+    private String type;
+
+
+    /**
+     * @return The type
+     */
+    public String getType() {
+        return type;
+    }
+
+    /**
+     * @param type The type
+     */
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public Location withType(String type) {
+        this.type = type;
+        return this;
+    }
 
     /**
      * @return The Id
@@ -112,18 +138,18 @@ public class Location extends Model {
     /**
      * @return The latitude
      */
-    public String getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
     /**
      * @param latitude The latitude
      */
-    public void setLatitude(String latitude) {
+    public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
 
-    public Location withLatitude(String latitude) {
+    public Location withLatitude(double latitude) {
         this.latitude = latitude;
         return this;
     }
@@ -131,18 +157,18 @@ public class Location extends Model {
     /**
      * @return The longitude
      */
-    public String getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
     /**
      * @param longitude The longitude
      */
-    public void setLongitude(String longitude) {
+    public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 
-    public Location withLongitude(String longitude) {
+    public Location withLongitude(double longitude) {
         this.longitude = longitude;
         return this;
     }
@@ -165,5 +191,4 @@ public class Location extends Model {
         this.name = name;
         return this;
     }
-
 }

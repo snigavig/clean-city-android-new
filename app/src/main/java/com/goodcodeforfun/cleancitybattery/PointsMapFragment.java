@@ -7,7 +7,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -46,8 +45,6 @@ public class PointsMapFragment extends Fragment implements OnMapReadyCallback {
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
             if (data.getCount() != 0) {
                 for (data.moveToFirst(); !data.isAfterLast(); data.moveToNext()) {
-                    Log.d("!!!!!!!!!!!!!LAT", data.getString(data.getColumnIndex(Location.COLUMN_LATITUDE)));
-                    Log.d("!!!!!!!!!!!!!LON", data.getString(data.getColumnIndex(Location.COLUMN_LONGTITUDE)));
                 }
             }
         }
