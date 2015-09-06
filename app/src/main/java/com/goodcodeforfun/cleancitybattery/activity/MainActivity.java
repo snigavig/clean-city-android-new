@@ -15,8 +15,10 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.activeandroid.content.ContentProvider;
+import com.goodcodeforfun.cleancitybattery.CleanCityApplication;
 import com.goodcodeforfun.cleancitybattery.R;
 import com.goodcodeforfun.cleancitybattery.fragment.PointsListFragment;
 import com.goodcodeforfun.cleancitybattery.fragment.PointsMapFragment;
@@ -28,7 +30,7 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements
-        NavigationView.OnNavigationItemSelectedListener {
+        NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
     private static final long DRAWER_CLOSE_DELAY_MS = 250;
     private static final String NAV_ITEM_ID = "navItemId";
@@ -37,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements
     private final PointsMapFragment mPointsMapFragment = new PointsMapFragment();
     private final PointsListFragment mPointsListFragment = new PointsListFragment();
     private DrawerLayout mDrawerLayout;
+    private Toolbar mToolbar;
     private ActionBarDrawerToggle mDrawerToggle;
     private int mNavItemId;
     private LoaderManager mLoaderManager;
@@ -48,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements
 
             return new CursorLoader(MainActivity.this,
                     ContentProvider.createUri(Location.class, null),
-                    null, "Type = ?", new String[]{mCurrentLocationType.toString()}, null
+                    null, "Type = ?", new String[]{mCurrentLocationType.name()}, null
             );
 
         }
@@ -87,9 +90,10 @@ public class MainActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_main);
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        findViewById(R.id.menu_item_add_location).setOnClickListener(this);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
 
         // load saved navigation state if present
         if (null == savedInstanceState) {
@@ -104,12 +108,8 @@ public class MainActivity extends AppCompatActivity implements
 
         // select the correct nav menu item
         navigationView.getMenu().findItem(mNavItemId).setChecked(true);
-
+        setDrawerIndicator();
         // set up the hamburger icon to open and close the drawer
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.open,
-                R.string.close);
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
-        mDrawerToggle.syncState();
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.content, mPointsMapFragment)
@@ -130,6 +130,26 @@ public class MainActivity extends AppCompatActivity implements
 //        mServicePostIntent.setAction(NetworkService.ACTION_POST_LOCATION);
 //        mServicePostIntent.putExtra(NetworkService.EXTRA_LOCATION_DB_ID, location.getId().toString());
 //        startService(mServicePostIntent);
+    }
+
+    public void setDrawerIndicator() {
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.open,
+                R.string.close);
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+        mDrawerToggle.syncState();
+    }
+
+    public void setHomeAsUpIndicator() {
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.open,
+                R.string.close);
+        mDrawerToggle.setToolbarNavigationClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+        mDrawerToggle.syncState();
     }
 
     public void showList() {
@@ -222,7 +242,33 @@ public class MainActivity extends AppCompatActivity implements
         mLoaderManager.initLoader(LOCATION_LOADER_ID, null, mLocationLoaderCallbacks);
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.menu_item_add_location:
+                Intent intent = new Intent(this, AddLocationActivity.class);
+                startActivity(intent);
+                break;
+            default:
+                //meh
+        }
+    }
+
     public enum LocationType {
-        battery, glass, paper, plastic
+        battery(CleanCityApplication.getInstance().getString(R.string.item_1)),
+        glass(CleanCityApplication.getInstance().getString(R.string.item_2)),
+        paper(CleanCityApplication.getInstance().getString(R.string.item_3)),
+        plastic(CleanCityApplication.getInstance().getString(R.string.item_4));
+
+        private String readableName;
+
+        LocationType(String readableName) {
+            this.readableName = readableName;
+        }
+
+        @Override
+        public String toString() {
+            return readableName;
+        }
     }
 }

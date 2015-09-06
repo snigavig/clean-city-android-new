@@ -62,6 +62,10 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".activity.AddLocationActivity"
+            android:label="@string/app_name"></activity>
+
         <provider
             android:name="com.activeandroid.content.ContentProvider"
             android:authorities="com.goodcodeforfun.cleancitybattery"
