@@ -1,7 +1,8 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    android:orientation="vertical">
 
     <!-- Toolbar instead of ActionBar so the drawer can slide on top -->
     <android.support.v7.widget.Toolbar
@@ -11,10 +12,31 @@
         android:background="?attr/colorPrimary"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-    <com.google.android.gms.maps.MapView
-        android:id="@+id/map"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="@dimen/abc_action_bar_default_height_material" />
+        android:layout_weight="1">
 
-</FrameLayout>
+        <com.google.android.gms.maps.MapView
+            android:id="@+id/map"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:scaleType="center"
+            android:src="@android:drawable/presence_online" />
+
+    </FrameLayout>
+
+    <Button
+        android:id="@+id/add_location_button"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/abc_action_bar_default_height_material"
+        android:layout_gravity="bottom"
+        android:background="?attr/colorPrimary"
+        android:text="ЗБЕРЕГТИ ПОЗИЦІЮ" />
+</LinearLayout>

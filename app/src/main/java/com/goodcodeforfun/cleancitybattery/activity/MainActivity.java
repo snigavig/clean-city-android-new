@@ -58,16 +58,23 @@ public class MainActivity extends AppCompatActivity implements
 
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-            if (data.getCount() != 0) {
-                LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
-                ArrayList<LatLng> mArrayList = new ArrayList<>();
-                LatLng position;
-                for (data.moveToFirst(); !data.isAfterLast(); data.moveToNext()) {
-                    position = new LatLng(data.getDouble(3), data.getDouble(4));
-                    boundsBuilder.include(position);
-                    mArrayList.add(position);
+            if (null != mPointsMapFragment && mPointsMapFragment.isVisible()) {
+                if (data.getCount() != 0) {
+                    LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
+                    ArrayList<LatLng> mArrayList = new ArrayList<>();
+                    LatLng position;
+                    for (data.moveToFirst(); !data.isAfterLast(); data.moveToNext()) {
+                        position = new LatLng(
+                                data.getDouble(data.getColumnIndex(Location.COLUMN_LATITUDE)),
+                                data.getDouble(data.getColumnIndex(Location.COLUMN_LONGTITUDE))
+                        );
+                        boundsBuilder.include(position);
+                        mArrayList.add(position);
+                    }
+                    mPointsMapFragment.updateMap(mArrayList, boundsBuilder.build());
+                } else {
+                    mPointsMapFragment.clearMap();
                 }
-                mPointsMapFragment.updateMap(mArrayList, boundsBuilder.build());
             }
         }
 

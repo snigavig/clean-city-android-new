@@ -51,7 +51,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@null"
-                android:text="Вибрати положення на картi ->" />
+                android:text="Вибрати положення на мапі ->" />
 
             <TextView
                 android:id="@+id/textView5"

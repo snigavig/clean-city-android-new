@@ -1,5 +1,6 @@
 package com.goodcodeforfun.cleancitybattery.activity;
 
+import android.location.Location;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +14,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
@@ -26,6 +28,7 @@ public class ChooseLocationOnMapActivity extends AppCompatActivity implements Vi
     public static final int ZOOM = 18;
     private GoogleMap mGoogleMap;
     private MapView mapView;
+    private LatLng mCenterOfMap;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -67,18 +70,37 @@ public class ChooseLocationOnMapActivity extends AppCompatActivity implements Vi
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
-        SmartLocation.with(this).location()
+
+        Location lastLocation = SmartLocation.with(this).location().getLastLocation();
+        if (null != lastLocation) {
+            moveMapCameraToPosition(lastLocation);
+        } else {
+            SmartLocation.with(this).location()
                 .oneFix()
                 .start(new OnLocationUpdatedListener() {
                     @Override
                     public void onLocationUpdated(android.location.Location location) {
-                        LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
-                        if (null != mGoogleMap) {
-                            //mGoogleMap.addMarker(new MarkerOptions().position(position).title("Location marker"));
-                            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, ZOOM));
-                        }
+                        moveMapCameraToPosition(location);
                     }
                 });
+        }
+    }
+
+    private void moveMapCameraToPosition(android.location.Location location) {
+        LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
+        if (null != mGoogleMap) {
+            mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(position, ZOOM));
+        }
+        if (null != mGoogleMap) {
+            mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(position, ZOOM));
+            mGoogleMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
+                @Override
+                public void onCameraChange(CameraPosition cameraPosition) {
+                    mCenterOfMap = mGoogleMap.getCameraPosition().target;
+                }
+            });
+            SmartLocation.with(this).location().stop();
+        }
     }
 
     @Override
