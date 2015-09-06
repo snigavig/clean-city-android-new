@@ -33,10 +33,11 @@
     </FrameLayout>
 
     <Button
-        android:id="@+id/add_location_button"
+        android:id="@+id/save_position_button"
         android:layout_width="match_parent"
         android:layout_height="@dimen/abc_action_bar_default_height_material"
         android:layout_gravity="bottom"
         android:background="?attr/colorPrimary"
+        android:enabled="false"
         android:text="ЗБЕРЕГТИ ПОЗИЦІЮ" />
 </LinearLayout>

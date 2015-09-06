@@ -1,5 +1,6 @@
 package com.goodcodeforfun.cleancitybattery.activity;
 
+import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -7,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 
 import com.goodcodeforfun.cleancitybattery.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -24,17 +26,22 @@ import io.nlopez.smartlocation.SmartLocation;
  * Created by snigavig on 06.09.15.
  */
 public class ChooseLocationOnMapActivity extends AppCompatActivity implements View.OnClickListener, OnMapReadyCallback {
-
+    public static final String POSITION_LAT_KEY = "POSITION_LAT";
+    public static final String POSITION_LON_KEY = "POSITION_LON";
     public static final int ZOOM = 18;
     private GoogleMap mGoogleMap;
     private MapView mapView;
     private LatLng mCenterOfMap;
+    private Button mSavePositionButton;
+
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_location_on_map);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        mSavePositionButton = (Button) findViewById(R.id.save_position_button);
+        mSavePositionButton.setOnClickListener(this);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -59,7 +66,12 @@ public class ChooseLocationOnMapActivity extends AppCompatActivity implements Vi
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.add_location_button:
+            case R.id.save_position_button:
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra(POSITION_LAT_KEY, mCenterOfMap.latitude);
+                returnIntent.putExtra(POSITION_LON_KEY, mCenterOfMap.longitude);
+                setResult(RESULT_OK, returnIntent);
+                finish();
                 break;
             default:
                 //muah
@@ -97,6 +109,7 @@ public class ChooseLocationOnMapActivity extends AppCompatActivity implements Vi
                 @Override
                 public void onCameraChange(CameraPosition cameraPosition) {
                     mCenterOfMap = mGoogleMap.getCameraPosition().target;
+                    mSavePositionButton.setEnabled(true);
                 }
             });
             SmartLocation.with(this).location().stop();

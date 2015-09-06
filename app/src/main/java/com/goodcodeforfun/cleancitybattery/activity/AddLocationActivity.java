@@ -8,20 +8,28 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.Spinner;
 
 import com.goodcodeforfun.cleancitybattery.R;
+import com.goodcodeforfun.cleancitybattery.model.Location;
+import com.goodcodeforfun.cleancitybattery.network.NetworkService;
+import com.google.android.gms.maps.model.LatLng;
 
 /**
  * Created by snigavig on 06.09.15.
  */
 public class AddLocationActivity extends AppCompatActivity implements View.OnClickListener {
     public static final int CHOOSE_ON_MAP_REQUEST = 4444;
+    private LatLng mPosition;
+    private Spinner mSpinner;
+    private EditText editTextName;
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_location);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        editTextName = (EditText) findViewById(R.id.editTextName);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -29,9 +37,10 @@ public class AddLocationActivity extends AppCompatActivity implements View.OnCli
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeButtonEnabled(true);
         }
-        Spinner mySpinner = (Spinner) findViewById(R.id.spinner);
-        mySpinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, MainActivity.LocationType.values()));
+        mSpinner = (Spinner) findViewById(R.id.spinner);
+        mSpinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, MainActivity.LocationType.values()));
         findViewById(R.id.choose_on_map_button).setOnClickListener(this);
+        findViewById(R.id.add_location_button).setOnClickListener(this);
     }
 
     @Override
@@ -46,6 +55,33 @@ public class AddLocationActivity extends AppCompatActivity implements View.OnCli
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.add_location_button:
+                String spinnerItemText = null;
+                MainActivity.LocationType type = null;
+
+                if (null != mSpinner) {
+                    spinnerItemText = mSpinner.getSelectedItem().toString();
+                    type = MainActivity.findByAbbr(spinnerItemText);
+                }
+                if (null != editTextName &&
+                        null != mPosition &&
+                        0 != mPosition.latitude &&
+                        0 != mPosition.longitude &&
+                        null != spinnerItemText &&
+                        !spinnerItemText.isEmpty() &&
+                        null != type) {
+                    Location location = new Location();
+                    location.setName(editTextName.getText().toString());
+                    location.setType(type.name());
+                    location.setLatitude(mPosition.latitude);
+                    location.setLongitude(mPosition.longitude);
+                    location.save();
+
+                    Intent mServicePostIntent = new Intent(this, NetworkService.class);
+                    mServicePostIntent.setAction(NetworkService.ACTION_POST_LOCATION);
+                    mServicePostIntent.putExtra(NetworkService.EXTRA_LOCATION_DB_ID, location.getId().toString());
+                    startService(mServicePostIntent);
+                    finish();
+                }
                 break;
             case R.id.choose_on_map_button:
                 Intent intent = new Intent(this, ChooseLocationOnMapActivity.class);
@@ -54,4 +90,19 @@ public class AddLocationActivity extends AppCompatActivity implements View.OnCli
                 //muah
         }
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == CHOOSE_ON_MAP_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                //Bundle bundle = getIntent().getBundleExtra(ChooseLocationOnMapActivity.BUNDLE_KEY);
+                mPosition = new LatLng(
+                        data.getDoubleExtra(ChooseLocationOnMapActivity.POSITION_LAT_KEY, 0),
+                        data.getDoubleExtra(ChooseLocationOnMapActivity.POSITION_LON_KEY, 0)
+                );
+                //  mPosition = bundle.getParcelable(ChooseLocationOnMapActivity.POSITION_KEY);
+            }
+        }
+    }
+
 }

@@ -3,6 +3,8 @@ package com.goodcodeforfun.cleancitybattery.network;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.activeandroid.ActiveAndroid;
 import com.activeandroid.query.Select;
@@ -87,11 +89,24 @@ public class NetworkService extends IntentService {
                 .executeSingle();
 
         if (null != location) {
+            Log.d("!!!!!", location.getName());
+            Log.d("!!!!!", String.valueOf(location.getLatitude()));
+            Log.d("!!!!!", String.valueOf(location.getLongitude()));
+            Log.d("!!!!!", location.getType());
+            location.setUser(null);
+            location.setApiId(null);
             Call<Location> locationCall = CleanCityApplication.getInstance().getNetworkService().addLocation(location);
             location.delete();
             try {
                 Response<Location> locationsResponse = locationCall.execute();
-                locationsResponse.body().save();
+                if (null != locationsResponse && null != locationsResponse.body()) {
+                    if (locationsResponse.isSuccess()) {
+                        locationsResponse.body().save();
+                        Toast.makeText(CleanCityApplication.getInstance(), "Location successfully added", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(CleanCityApplication.getInstance(), "Location not added, please try again", Toast.LENGTH_SHORT).show();
+                    }
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }

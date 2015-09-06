@@ -38,7 +38,7 @@
             android:layout_marginBottom="10dp"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:src="@android:drawable/ic_input_add"
+            android:src="@drawable/plus"
             app:fab_hideAnimation="@anim/fab_scale_down"
             app:fab_shadowColor="#66000000"
             app:fab_shadowRadius="4dp"

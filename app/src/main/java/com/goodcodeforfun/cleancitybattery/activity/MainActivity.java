@@ -83,6 +83,15 @@ public class MainActivity extends AppCompatActivity implements
         }
     };
 
+    public static LocationType findByAbbr(String abbr) {
+        for (LocationType v : LocationType.values()) {
+            if (v.toString().equals(abbr)) {
+                return v;
+            }
+        }
+        return null;
+    }
+
     public DrawerLayout getmDrawerLayout() {
         return mDrawerLayout;
     }
@@ -125,18 +134,6 @@ public class MainActivity extends AppCompatActivity implements
         Intent mServiceGetIntent = new Intent(this, NetworkService.class);
         mServiceGetIntent.setAction(NetworkService.ACTION_GET_LIST_LOCATIONS);
         startService(mServiceGetIntent);
-
-//        Location location = new Location();
-//        location.setName("minaname");
-//        location.setType("battery");
-//        location.setLatitude(51.34);
-//        location.setLongitude(24.26);
-//        location.save();
-
-//        Intent mServicePostIntent = new Intent(this, NetworkService.class);
-//        mServicePostIntent.setAction(NetworkService.ACTION_POST_LOCATION);
-//        mServicePostIntent.putExtra(NetworkService.EXTRA_LOCATION_DB_ID, location.getId().toString());
-//        startService(mServicePostIntent);
     }
 
     public void setDrawerIndicator() {

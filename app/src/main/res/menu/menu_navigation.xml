@@ -3,19 +3,19 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/drawer_item_1"
-            android:icon="@android:drawable/ic_menu_my_calendar"
+            android:icon="@drawable/battery"
             android:title="@string/item_1"/>
         <item
             android:id="@+id/drawer_item_2"
-            android:icon="@android:drawable/arrow_down_float"
+            android:icon="@drawable/glass"
             android:title="@string/item_2"/>
         <item
             android:id="@+id/drawer_item_3"
-            android:icon="@android:drawable/ic_menu_mapmode"
+            android:icon="@drawable/paper"
             android:title="@string/item_3" />
         <item
             android:id="@+id/drawer_item_4"
-            android:icon="@android:drawable/presence_online"
+            android:icon="@drawable/plastic"
             android:title="@string/item_4" />
     </group>
 </menu>
