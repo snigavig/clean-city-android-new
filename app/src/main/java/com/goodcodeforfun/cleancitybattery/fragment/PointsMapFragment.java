@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.goodcodeforfun.cleancitybattery.CleanCityApplication;
 import com.goodcodeforfun.cleancitybattery.R;
 import com.goodcodeforfun.cleancitybattery.activity.MainActivity;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -95,11 +96,11 @@ public class PointsMapFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
 
-        Location lastLocation = SmartLocation.with(getActivity()).location().getLastLocation();
+        Location lastLocation = SmartLocation.with(CleanCityApplication.getInstance()).location().getLastLocation();
         if (null != lastLocation) {
             moveMapCameraToPosition(lastLocation);
         } else {
-            SmartLocation.with(getActivity()).location()
+            SmartLocation.with(CleanCityApplication.getInstance()).location()
                     .oneFix()
                     .start(new OnLocationUpdatedListener() {
                         @Override
@@ -114,7 +115,7 @@ public class PointsMapFragment extends Fragment implements OnMapReadyCallback {
         LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
         if (null != mGoogleMap) {
             mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(position, ZOOM));
-            SmartLocation.with(getActivity()).location().stop();
+            SmartLocation.with(CleanCityApplication.getInstance()).location().stop();
         }
     }
 

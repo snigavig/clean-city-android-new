@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
+import com.goodcodeforfun.cleancitybattery.CleanCityApplication;
 import com.goodcodeforfun.cleancitybattery.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -83,11 +84,11 @@ public class ChooseLocationOnMapActivity extends AppCompatActivity implements Vi
     public void onMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
 
-        Location lastLocation = SmartLocation.with(this).location().getLastLocation();
+        Location lastLocation = SmartLocation.with(CleanCityApplication.getInstance()).location().getLastLocation();
         if (null != lastLocation) {
             moveMapCameraToPosition(lastLocation);
         } else {
-            SmartLocation.with(this).location()
+            SmartLocation.with(CleanCityApplication.getInstance()).location()
                 .oneFix()
                 .start(new OnLocationUpdatedListener() {
                     @Override
