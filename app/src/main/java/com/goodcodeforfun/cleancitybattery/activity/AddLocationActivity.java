@@ -20,7 +20,7 @@ import com.google.android.gms.maps.model.LatLng;
  * Created by snigavig on 06.09.15.
  */
 public class AddLocationActivity extends AppCompatActivity implements View.OnClickListener {
-    public static final int CHOOSE_ON_MAP_REQUEST = 4444;
+    private static final int CHOOSE_ON_MAP_REQUEST = 4444;
     private LatLng mPosition;
     private Spinner mSpinner;
     private EditText editTextName;

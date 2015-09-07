@@ -11,7 +11,7 @@ public class SharedPreferencesHelper {
     public static final String LAST_UPDATE_TIME_KEY = "LAST_UPDATE_TIME";
 
 
-    private SharedPreferences prefs;
+    private final SharedPreferences prefs;
 
 
     public SharedPreferencesHelper(Context context) {

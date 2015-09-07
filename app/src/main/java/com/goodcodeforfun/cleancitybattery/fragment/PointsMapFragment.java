@@ -30,7 +30,7 @@ import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
 
 public class PointsMapFragment extends Fragment implements OnMapReadyCallback {
-    public static final int ZOOM = 13;
+    private static final int ZOOM = 13;
     private WeakReference<MainActivity> mainActivityWeakReference;
     private GoogleMap mGoogleMap;
     private MapView mapView;
@@ -90,12 +90,6 @@ public class PointsMapFragment extends Fragment implements OnMapReadyCallback {
         mapView.getMapAsync(this);
         return v;
     }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-    }
-
 
     @Override
     public void onMapReady(GoogleMap googleMap) {

@@ -1,4 +1,5 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
@@ -18,7 +19,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="@dimen/abc_action_bar_default_height_material"
-        android:fillViewport="true">
+        android:fillViewport="true"
+        tools:ignore="PrivateResource">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -29,19 +31,20 @@
                 android:id="@+id/textView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Назва:"
+                android:text="@string/name_label_text"
                 android:textColor="@color/primaryText" />
 
             <EditText
                 android:id="@+id/editTextName"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:inputType="text" />
 
             <TextView
                 android:id="@+id/textView3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Тип:"
+                android:text="@string/type_label_text"
                 android:textColor="@color/primaryText" />
 
             <Spinner
@@ -54,14 +57,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@null"
-                android:text="Вибрати положення на мапі ->"
+                android:text="@string/choose_location_on_map_button_text"
                 android:textColor="@color/primaryText" />
 
             <TextView
                 android:id="@+id/textView5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Адреса:"
+                android:text="@string/address_text"
                 android:textColor="@color/primaryText" />
 
             <EditText
@@ -75,7 +78,7 @@
                 android:id="@+id/textView4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Коментар:"
+                android:text="@string/comment_text"
                 android:textColor="@color/primaryText" />
 
             <EditText
@@ -90,7 +93,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/primary"
-                android:text="ДОДАТИ ПУНКТ" />
+                android:text="@string/add_location_button_text" />
         </LinearLayout>
     </ScrollView>
 

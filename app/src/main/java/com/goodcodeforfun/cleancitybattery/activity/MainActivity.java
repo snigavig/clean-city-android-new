@@ -271,7 +271,7 @@ public class MainActivity extends AppCompatActivity implements
         paper(CleanCityApplication.getInstance().getString(R.string.item_3)),
         plastic(CleanCityApplication.getInstance().getString(R.string.item_4));
 
-        private String readableName;
+        private final String readableName;
 
         LocationType(String readableName) {
             this.readableName = readableName;

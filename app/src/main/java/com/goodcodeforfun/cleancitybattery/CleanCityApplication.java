@@ -1,7 +1,6 @@
 package com.goodcodeforfun.cleancitybattery;
 
 import android.app.Application;
-import android.content.Context;
 
 import com.activeandroid.ActiveAndroid;
 import com.goodcodeforfun.cleancitybattery.network.CleanCityApiService;
@@ -17,7 +16,6 @@ import retrofit.Retrofit;
  */
 public class CleanCityApplication extends Application {
     public static final String LOG_TAG = "cleancity-app";
-    private static Context mContext;
     private static SharedPreferencesHelper mSharedPreferencesHelper;
     private static CleanCityApplication mInstance;
     private CleanCityApiService networkService;
@@ -37,7 +35,6 @@ public class CleanCityApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        mContext = this;
         mSharedPreferencesHelper = new SharedPreferencesHelper(this);
         mInstance = this;
         Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();

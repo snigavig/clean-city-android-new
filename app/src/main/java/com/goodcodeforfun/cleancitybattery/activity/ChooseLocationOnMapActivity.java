@@ -28,7 +28,7 @@ import io.nlopez.smartlocation.SmartLocation;
 public class ChooseLocationOnMapActivity extends AppCompatActivity implements View.OnClickListener, OnMapReadyCallback {
     public static final String POSITION_LAT_KEY = "POSITION_LAT";
     public static final String POSITION_LON_KEY = "POSITION_LON";
-    public static final int ZOOM = 18;
+    private static final int ZOOM = 18;
     private GoogleMap mGoogleMap;
     private MapView mapView;
     private LatLng mCenterOfMap;
