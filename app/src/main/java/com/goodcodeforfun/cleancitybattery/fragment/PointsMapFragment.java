@@ -30,7 +30,7 @@ import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
 
 public class PointsMapFragment extends Fragment implements OnMapReadyCallback {
-    public static final int ZOOM = 15;
+    public static final int ZOOM = 13;
     private WeakReference<MainActivity> mainActivityWeakReference;
     private GoogleMap mGoogleMap;
     private MapView mapView;
@@ -47,18 +47,15 @@ public class PointsMapFragment extends Fragment implements OnMapReadyCallback {
                     ) {
                 mGoogleMap.addMarker(new MarkerOptions()
                                 .position(point)
-                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.location_icon))
                 );
             }
-//            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, 1000, 1000, 0); //(bounds, padding);
-//            mGoogleMap.animateCamera(cameraUpdate);
         }
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        //menu.clear();
         inflater.inflate(R.menu.menu_main, menu);
         menu.findItem(R.id.action_map_view).setVisible(false);
         menu.findItem(R.id.action_list_view).setVisible(true);
@@ -122,7 +119,6 @@ public class PointsMapFragment extends Fragment implements OnMapReadyCallback {
     private void moveMapCameraToPosition(android.location.Location location) {
         LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
         if (null != mGoogleMap) {
-            //mGoogleMap.addMarker(new MarkerOptions().position(position).title("Location marker"));
             mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(position, ZOOM));
             SmartLocation.with(getActivity()).location().stop();
         }

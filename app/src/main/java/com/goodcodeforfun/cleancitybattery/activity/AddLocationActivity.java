@@ -38,7 +38,7 @@ public class AddLocationActivity extends AppCompatActivity implements View.OnCli
             actionBar.setHomeButtonEnabled(true);
         }
         mSpinner = (Spinner) findViewById(R.id.spinner);
-        mSpinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, MainActivity.LocationType.values()));
+        mSpinner.setAdapter(new ArrayAdapter<>(this, R.layout.spinner_dropdown_item, MainActivity.LocationType.values()));
         findViewById(R.id.choose_on_map_button).setOnClickListener(this);
         findViewById(R.id.add_location_button).setOnClickListener(this);
     }
@@ -95,12 +95,10 @@ public class AddLocationActivity extends AppCompatActivity implements View.OnCli
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == CHOOSE_ON_MAP_REQUEST) {
             if (resultCode == RESULT_OK) {
-                //Bundle bundle = getIntent().getBundleExtra(ChooseLocationOnMapActivity.BUNDLE_KEY);
                 mPosition = new LatLng(
                         data.getDoubleExtra(ChooseLocationOnMapActivity.POSITION_LAT_KEY, 0),
                         data.getDoubleExtra(ChooseLocationOnMapActivity.POSITION_LON_KEY, 0)
                 );
-                //  mPosition = bundle.getParcelable(ChooseLocationOnMapActivity.POSITION_KEY);
             }
         }
     }

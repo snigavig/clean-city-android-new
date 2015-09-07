@@ -1,6 +1,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background"
     android:fillViewport="true">
 
     <!-- Toolbar instead of ActionBar so the drawer can slide on top -->
@@ -28,7 +29,8 @@
                 android:id="@+id/textView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Name:" />
+                android:text="Назва:"
+                android:textColor="@color/primaryText" />
 
             <EditText
                 android:id="@+id/editTextName"
@@ -39,7 +41,8 @@
                 android:id="@+id/textView3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Type:" />
+                android:text="Тип:"
+                android:textColor="@color/primaryText" />
 
             <Spinner
                 android:id="@+id/spinner"
@@ -51,13 +54,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@null"
-                android:text="Вибрати положення на мапі ->" />
+                android:text="Вибрати положення на мапі ->"
+                android:textColor="@color/primaryText" />
 
             <TextView
                 android:id="@+id/textView5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Адреса:" />
+                android:text="Адреса:"
+                android:textColor="@color/primaryText" />
 
             <EditText
                 android:id="@+id/editText3"
@@ -70,7 +75,8 @@
                 android:id="@+id/textView4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Коментар:" />
+                android:text="Коментар:"
+                android:textColor="@color/primaryText" />
 
             <EditText
                 android:id="@+id/editText2"
@@ -84,7 +90,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/primary"
-                android:text="ADD LOCATION" />
+                android:text="ДОДАТИ ПУНКТ" />
         </LinearLayout>
     </ScrollView>
 

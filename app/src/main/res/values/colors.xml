@@ -4,9 +4,10 @@
     <color name="secondaryDark">#333333</color>
     <color name="primary">#2dc100</color>
     <color name="primaryDark">#27a800</color>
+    <color name="primaryBright">#ff5610</color>
+    <color name="primaryBrighter">#ff9919</color>
     <color name="black_semi_transparent">#B2000000</color>
     <color name="background">#e5e5e5</color>
-    <color name="half_black">#808080</color>
     <color name="white">#fafafa</color>
     <color name="white_pressed">#f1f1f1</color>
     <color name="primaryText">#de000000</color>

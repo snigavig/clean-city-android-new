@@ -29,7 +29,6 @@ public class PointsListFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        //menu.clear();
         inflater.inflate(R.menu.menu_main, menu);
         menu.findItem(R.id.action_map_view).setVisible(true);
         menu.findItem(R.id.action_list_view).setVisible(false);

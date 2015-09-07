@@ -28,25 +28,18 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <com.github.clans.fab.FloatingActionButton
+        <android.support.design.widget.FloatingActionButton
             android:id="@+id/menu_item_add_location"
-            style="@style/MenuButtonsStyle"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginBottom="10dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
+            android:layout_alignParentRight="true"
+            android:layout_margin="10dp"
             android:src="@drawable/plus"
-            app:fab_hideAnimation="@anim/fab_scale_down"
-            app:fab_shadowColor="#66000000"
-            app:fab_shadowRadius="4dp"
-            app:fab_shadowXOffset="1dp"
-            app:fab_shadowYOffset="3dp"
-            app:fab_showAnimation="@anim/fab_scale_up"
-            app:fab_showShadow="true"
-            app:fab_size="normal" />
+            app:backgroundTint="@color/primaryBright"
+            app:elevation="6dp"
+            app:pressedTranslationZ="12dp"
+            app:rippleColor="@color/primaryBrighter" />
 
     </RelativeLayout>
 

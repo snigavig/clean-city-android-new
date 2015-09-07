@@ -16,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 
 import com.activeandroid.content.ContentProvider;
 import com.goodcodeforfun.cleancitybattery.CleanCityApplication;
@@ -26,6 +27,7 @@ import com.goodcodeforfun.cleancitybattery.model.Location;
 import com.goodcodeforfun.cleancitybattery.network.NetworkService;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -131,6 +133,11 @@ public class MainActivity extends AppCompatActivity implements
                 .replace(R.id.content, mPointsMapFragment)
                 .commit();
         navigate(mNavItemId);
+
+        ImageView avatar = (ImageView) findViewById(R.id.avatarImageView);
+        Picasso.with(this).load(R.drawable.cat_default_avatar).into(avatar);
+
+
         Intent mServiceGetIntent = new Intent(this, NetworkService.class);
         mServiceGetIntent.setAction(NetworkService.ACTION_GET_LIST_LOCATIONS);
         startService(mServiceGetIntent);

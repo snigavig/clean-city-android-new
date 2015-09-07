@@ -9,11 +9,4 @@
         <item name="colorControlHighlight">@color/secondaryDark</item>
         <item name="actionModeBackground">@color/secondaryDark</item>
     </style>
-
-    <style name="MenuButtonsStyle">
-        <item name="fab_shadowColor">#444</item>
-        <item name="fab_colorNormal">#27a800</item>
-        <item name="fab_colorPressed">#2dc100</item>
-        <item name="fab_colorRipple">#27a500</item>
-    </style>
 </resources>
