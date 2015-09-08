@@ -29,28 +29,31 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.squareup.picasso.Picasso;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
     private static final long DRAWER_CLOSE_DELAY_MS = 250;
+    private static final int COUNTER_GOAL = 7;
     private static final String NAV_ITEM_ID = "navItemId";
     private static final int LOCATION_LOADER_ID = 1234;
     private final Handler mDrawerActionHandler = new Handler();
     private final PointsMapFragment mPointsMapFragment = new PointsMapFragment();
     private final PointsListFragment mPointsListFragment = new PointsListFragment();
+    private int counter = 0;
     private DrawerLayout mDrawerLayout;
     private Toolbar mToolbar;
     private ActionBarDrawerToggle mDrawerToggle;
     private int mNavItemId;
     private LoaderManager mLoaderManager;
+    private WeakReference<MainActivity> mainActivityWeakReference;
     private LocationType mCurrentLocationType = LocationType.battery;
     private final LoaderManager.LoaderCallbacks<Cursor> mLocationLoaderCallbacks = new LoaderManager.LoaderCallbacks<Cursor>() {
 
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-
             return new CursorLoader(MainActivity.this,
                     ContentProvider.createUri(Location.class, null),
                     null, "Type = ?", new String[]{mCurrentLocationType.name()}, null
@@ -94,6 +97,18 @@ public class MainActivity extends AppCompatActivity implements
         return null;
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        restartLocationsLoader();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        restartLocationsLoader();
+    }
+
     public DrawerLayout getmDrawerLayout() {
         return mDrawerLayout;
     }
@@ -107,6 +122,10 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mLoaderManager = getSupportLoaderManager();
+        mLoaderManager.initLoader(LOCATION_LOADER_ID, null, mLocationLoaderCallbacks);
+
+        mainActivityWeakReference = new WeakReference<>(this);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         findViewById(R.id.menu_item_add_location).setOnClickListener(this);
 
@@ -136,7 +155,18 @@ public class MainActivity extends AppCompatActivity implements
 
         ImageView avatar = (ImageView) findViewById(R.id.avatarImageView);
         Picasso.with(this).load(R.drawable.cat_default_avatar).into(avatar);
-
+        avatar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (COUNTER_GOAL != counter) {
+                    counter++;
+                } else {
+                    counter = 0;
+                    Intent intent = new Intent(mainActivityWeakReference.get(), MiniGamesActivity.class);
+                    startActivity(intent);
+                }
+            }
+        });
 
         Intent mServiceGetIntent = new Intent(this, NetworkService.class);
         mServiceGetIntent.setAction(NetworkService.ACTION_GET_LIST_LOCATIONS);
@@ -195,8 +225,6 @@ public class MainActivity extends AppCompatActivity implements
                 // ignore
                 break;
         }
-        if (null != mLoaderManager) //Restart loader only when it is inited
-            mLoaderManager.restartLoader(LOCATION_LOADER_ID, null, mLocationLoaderCallbacks);
     }
 
     @Override
@@ -247,13 +275,6 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        mLoaderManager = getSupportLoaderManager();
-        mLoaderManager.initLoader(LOCATION_LOADER_ID, null, mLocationLoaderCallbacks);
-    }
-
-    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.menu_item_add_location:
@@ -263,6 +284,11 @@ public class MainActivity extends AppCompatActivity implements
             default:
                 //meh
         }
+    }
+
+    public void restartLocationsLoader() {
+        if (null != mLoaderManager)
+            mLoaderManager.restartLoader(LOCATION_LOADER_ID, null, mLocationLoaderCallbacks);
     }
 
     public enum LocationType {

@@ -109,6 +109,7 @@ public class PointsMapFragment extends Fragment implements OnMapReadyCallback {
                         }
                     });
         }
+        mainActivityWeakReference.get().restartLocationsLoader();
     }
 
     private void moveMapCameraToPosition(android.location.Location location) {

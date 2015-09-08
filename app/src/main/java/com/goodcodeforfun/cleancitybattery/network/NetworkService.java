@@ -7,6 +7,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.activeandroid.ActiveAndroid;
+import com.activeandroid.content.ContentProvider;
 import com.activeandroid.query.Select;
 import com.goodcodeforfun.cleancitybattery.CleanCityApplication;
 import com.goodcodeforfun.cleancitybattery.model.Location;
@@ -72,11 +73,13 @@ public class NetworkService extends IntentService {
             ActiveAndroid.beginTransaction();
             try {
                 for (Location location : locationsResponse.body()) {
+                    Log.d("asdfasfasdf", "wwwwwwwwwwwwwwwwww");
                     location.save();
                 }
                 ActiveAndroid.setTransactionSuccessful();
             } finally {
                 ActiveAndroid.endTransaction();
+                getContentResolver().notifyChange(ContentProvider.createUri(Location.class, null), null);
             }
         }
     }

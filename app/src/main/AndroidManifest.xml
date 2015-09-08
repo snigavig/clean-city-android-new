@@ -52,6 +52,7 @@
         <meta-data
             android:name="AA_MODELS"
             android:value="com.goodcodeforfun.cleancitybattery.model.Location" />
+
         <activity
             android:name=".activity.MainActivity"
             android:label="@string/app_name" >
@@ -61,12 +62,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".activity.AddLocationActivity"
             android:label="@string/app_name" />
-
-
         <activity
             android:name=".activity.ChooseLocationOnMapActivity"
             android:label="@string/app_name" />
@@ -80,6 +78,15 @@
         <service
             android:name=".network.NetworkService"
             android:exported="false" />
+
+        <activity
+            android:name=".activity.MiniGamesActivity"
+            android:label="@string/title_activity_mini_games"
+            android:parentActivityName=".activity.MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.goodcodeforfun.cleancitybattery.activity.MainActivity" />
+        </activity>
     </application>
 
 </manifest>
