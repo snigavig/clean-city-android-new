@@ -242,6 +242,7 @@ public class MainActivity extends AppCompatActivity implements
                 navigate(menuItem.getItemId());
             }
         }, DRAWER_CLOSE_DELAY_MS);
+        restartLocationsLoader();
         return true;
     }
 
