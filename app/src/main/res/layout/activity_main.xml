@@ -8,7 +8,8 @@
 
 
     <!-- The main content view -->
-    <RelativeLayout
+    <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/wrap_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/background"
@@ -25,26 +26,34 @@
             tools:ignore="PrivateResource" />
 
         <!-- Real content goes here -->
+
         <FrameLayout
             android:id="@+id/content"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent">
+
+        </FrameLayout>
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/menu_item_add_location"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_margin="10dp"
+            android:layout_gravity="end|bottom"
+            android:layout_margin="16dp"
             android:src="@drawable/plus"
             app:backgroundTint="@color/primaryBright"
             app:elevation="6dp"
             app:pressedTranslationZ="12dp"
             app:rippleColor="@color/primaryBrighter" />
 
-    </RelativeLayout>
+    </android.support.design.widget.CoordinatorLayout>
 
 
     <!-- The navigation drawer -->

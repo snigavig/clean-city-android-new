@@ -1,7 +1,9 @@
 package com.goodcodeforfun.cleancitybattery.activity;
 
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -13,6 +15,7 @@ import android.widget.Spinner;
 
 import com.goodcodeforfun.cleancitybattery.R;
 import com.goodcodeforfun.cleancitybattery.model.Location;
+import com.goodcodeforfun.cleancitybattery.network.ErrorHandler;
 import com.goodcodeforfun.cleancitybattery.network.NetworkService;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -41,6 +44,16 @@ public class AddLocationActivity extends AppCompatActivity implements View.OnCli
         mSpinner.setAdapter(new ArrayAdapter<>(this, R.layout.spinner_dropdown_item, MainActivity.LocationType.values()));
         findViewById(R.id.choose_on_map_button).setOnClickListener(this);
         findViewById(R.id.add_location_button).setOnClickListener(this);
+
+
+        IntentFilter statusIntentFilter = new IntentFilter(
+                NetworkService.ACTION_BROADCAST);
+
+        ErrorHandler.ResponseReceiver responseReceiver =
+                new ErrorHandler.ResponseReceiver(findViewById(R.id.scrollView));
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+                responseReceiver,
+                statusIntentFilter);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.goodcodeforfun.cleancitybattery.activity;
 
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -17,6 +19,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import com.activeandroid.content.ContentProvider;
 import com.goodcodeforfun.cleancitybattery.CleanCityApplication;
@@ -24,6 +27,7 @@ import com.goodcodeforfun.cleancitybattery.R;
 import com.goodcodeforfun.cleancitybattery.fragment.PointsListFragment;
 import com.goodcodeforfun.cleancitybattery.fragment.PointsMapFragment;
 import com.goodcodeforfun.cleancitybattery.model.Location;
+import com.goodcodeforfun.cleancitybattery.network.ErrorHandler;
 import com.goodcodeforfun.cleancitybattery.network.NetworkService;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -45,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements
     private int counter = 0;
     private DrawerLayout mDrawerLayout;
     private Toolbar mToolbar;
+    private ProgressBar mProgressBar;
     private ActionBarDrawerToggle mDrawerToggle;
     private int mNavItemId;
     private LoaderManager mLoaderManager;
@@ -54,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements
 
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+            mProgressBar.setVisibility(View.VISIBLE);
             return new CursorLoader(MainActivity.this,
                     ContentProvider.createUri(Location.class, null),
                     null, "Type = ?", new String[]{mCurrentLocationType.name()}, null
@@ -76,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements
                         boundsBuilder.include(position);
                         mArrayList.add(position);
                     }
+                    mProgressBar.setVisibility(View.GONE);
                     mPointsMapFragment.updateMap(mArrayList, boundsBuilder.build());
                 } else {
                     mPointsMapFragment.clearMap();
@@ -85,6 +92,7 @@ public class MainActivity extends AppCompatActivity implements
 
         @Override
         public void onLoaderReset(Loader<Cursor> loader) {
+            mProgressBar.setVisibility(View.VISIBLE);
         }
     };
 
@@ -109,24 +117,32 @@ public class MainActivity extends AppCompatActivity implements
         restartLocationsLoader();
     }
 
-    public DrawerLayout getmDrawerLayout() {
-        return mDrawerLayout;
-    }
 
-    public ActionBarDrawerToggle getDrawerToggle() {
-        return mDrawerToggle;
-    }
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
+        mProgressBar.setVisibility(View.VISIBLE);
+
         mLoaderManager = getSupportLoaderManager();
         mLoaderManager.initLoader(LOCATION_LOADER_ID, null, mLocationLoaderCallbacks);
 
         mainActivityWeakReference = new WeakReference<>(this);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+
+        IntentFilter statusIntentFilter = new IntentFilter(
+                NetworkService.ACTION_BROADCAST);
+
+        ErrorHandler.ResponseReceiver responseReceiver =
+                new ErrorHandler.ResponseReceiver(findViewById(R.id.menu_item_add_location));
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+                responseReceiver,
+                statusIntentFilter);
+
         findViewById(R.id.menu_item_add_location).setOnClickListener(this);
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -180,6 +196,7 @@ public class MainActivity extends AppCompatActivity implements
         mDrawerToggle.syncState();
     }
 
+    //Just an idea...
     public void setHomeAsUpIndicator() {
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.open,
                 R.string.close);
@@ -240,9 +257,9 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void run() {
                 navigate(menuItem.getItemId());
+                restartLocationsLoader();
             }
         }, DRAWER_CLOSE_DELAY_MS);
-        restartLocationsLoader();
         return true;
     }
 

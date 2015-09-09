@@ -16,6 +16,9 @@ import retrofit.Retrofit;
  */
 public class CleanCityApplication extends Application {
     public static final String LOG_TAG = "cleancity-app";
+    private static final String BASE_URL = "http://146.185.190.210";
+    private static final int PORT = 3000;
+    public static final String FULL_URL = BASE_URL + ":" + PORT;
     private static SharedPreferencesHelper mSharedPreferencesHelper;
     private static CleanCityApplication mInstance;
     private CleanCityApiService networkService;
@@ -39,7 +42,7 @@ public class CleanCityApplication extends Application {
         mInstance = this;
         Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://146.185.190.210:3000/")
+                .baseUrl(FULL_URL)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
 
