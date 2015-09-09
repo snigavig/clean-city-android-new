@@ -22,7 +22,7 @@ public class DeviceStateHelper {
     private static final int RESPONSE_OK = 200;
     private static final int CONNECT_TIMEOUT = 1500;
 
-    public static Boolean isNetworkInterfaceConnected() {
+    private static Boolean isNetworkInterfaceConnected() {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) CleanCityApplication.getInstance().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
@@ -45,7 +45,7 @@ public class DeviceStateHelper {
         return false;
     }
 
-    static class checkApiConnection extends AsyncTask<String, Void, Boolean> {
+    private static class checkApiConnection extends AsyncTask<String, Void, Boolean> {
 
         protected Boolean doInBackground(String... urls) {
             try {

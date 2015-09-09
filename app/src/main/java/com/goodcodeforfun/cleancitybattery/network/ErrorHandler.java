@@ -41,7 +41,7 @@ public class ErrorHandler {
 
 
     public static class ResponseReceiver extends BroadcastReceiver {
-        private View mParentView;
+        private final View mParentView;
 
         // Prevents instantiation
         public ResponseReceiver(View view) {

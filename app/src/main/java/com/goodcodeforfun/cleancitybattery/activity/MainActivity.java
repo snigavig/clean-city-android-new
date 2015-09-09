@@ -189,7 +189,7 @@ public class MainActivity extends AppCompatActivity implements
         startService(mServiceGetIntent);
     }
 
-    public void setDrawerIndicator() {
+    private void setDrawerIndicator() {
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.open,
                 R.string.close);
         mDrawerLayout.setDrawerListener(mDrawerToggle);
