@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar"><!-- Customize your theme here. -->
+        <item name="windowActionBar">false</item>
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primaryDark</item>
+        <item name="colorControlNormal">@android:color/darker_gray</item>
+        <item name="colorControlActivated">@color/primaryDark</item>
+        <item name="colorControlHighlight">@color/secondaryDark</item>
+        <item name="actionModeBackground">@color/secondaryDark</item>
+        <item name="android:navigationBarColor">@color/primaryDark</item>
+    </style>
+</resources>

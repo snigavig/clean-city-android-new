@@ -2,17 +2,22 @@ package com.goodcodeforfun.cleancitybattery.activity;
 
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import com.goodcodeforfun.cleancitybattery.CleanCityApplication;
 import com.goodcodeforfun.cleancitybattery.R;
 import com.goodcodeforfun.cleancitybattery.model.Location;
 import com.goodcodeforfun.cleancitybattery.network.ErrorHandler;
@@ -27,6 +32,7 @@ public class AddLocationActivity extends AppCompatActivity implements View.OnCli
     private LatLng mPosition;
     private Spinner mSpinner;
     private EditText editTextName;
+    private EditText address;
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,9 +48,24 @@ public class AddLocationActivity extends AppCompatActivity implements View.OnCli
         }
         mSpinner = (Spinner) findViewById(R.id.spinner);
         mSpinner.setAdapter(new ArrayAdapter<>(this, R.layout.spinner_dropdown_item, MainActivity.LocationType.values()));
-        findViewById(R.id.choose_on_map_button).setOnClickListener(this);
         findViewById(R.id.add_location_button).setOnClickListener(this);
+        address = (EditText) findViewById(R.id.editText3);
+        address.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                final int DRAWABLE_RIGHT = 2;
 
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    if (event.getRawX() >= (address.getRight() - address.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                        Intent intent = new Intent(CleanCityApplication.getInstance(), ChooseLocationOnMapActivity.class);
+                        startActivityForResult(intent, CHOOSE_ON_MAP_REQUEST);
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
+        setLocationIconGrayTint();
 
         IntentFilter statusIntentFilter = new IntentFilter(
                 NetworkService.ACTION_BROADCAST);
@@ -96,9 +117,6 @@ public class AddLocationActivity extends AppCompatActivity implements View.OnCli
                     finish();
                 }
                 break;
-            case R.id.choose_on_map_button:
-                Intent intent = new Intent(this, ChooseLocationOnMapActivity.class);
-                startActivityForResult(intent, CHOOSE_ON_MAP_REQUEST);
             default:
                 //muah
         }
@@ -108,6 +126,7 @@ public class AddLocationActivity extends AppCompatActivity implements View.OnCli
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == CHOOSE_ON_MAP_REQUEST) {
             if (resultCode == RESULT_OK) {
+                setLocationIconGreenTint();
                 mPosition = new LatLng(
                         data.getDoubleExtra(ChooseLocationOnMapActivity.POSITION_LAT_KEY, 0),
                         data.getDoubleExtra(ChooseLocationOnMapActivity.POSITION_LON_KEY, 0)
@@ -116,4 +135,17 @@ public class AddLocationActivity extends AppCompatActivity implements View.OnCli
         }
     }
 
+    private void setLocationIconGrayTint() {
+        Drawable normalDrawable = ContextCompat.getDrawable(this, R.drawable.ic_pin_drop_24dp1);
+        Drawable wrapDrawable = DrawableCompat.wrap(normalDrawable);
+        DrawableCompat.setTint(wrapDrawable, ContextCompat.getColor(this, R.color.inactive));
+        address.setCompoundDrawablesWithIntrinsicBounds(null, null, wrapDrawable, null);
+    }
+
+    private void setLocationIconGreenTint() {
+        Drawable normalDrawable = ContextCompat.getDrawable(this, R.drawable.ic_pin_drop_24dp1);
+        Drawable wrapDrawable = DrawableCompat.wrap(normalDrawable);
+        DrawableCompat.setTint(wrapDrawable, ContextCompat.getColor(this, R.color.primary));
+        address.setCompoundDrawablesWithIntrinsicBounds(null, null, wrapDrawable, null);
+    }
 }

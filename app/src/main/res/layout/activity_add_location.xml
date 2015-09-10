@@ -30,55 +30,57 @@
             <TextView
                 android:id="@+id/textView2"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="?attr/listPreferredItemHeight"
+                android:gravity="center_vertical"
                 android:text="@string/name_label_text"
+                android:textAppearance="@android:style/TextAppearance.Large"
                 android:textColor="@color/primaryText" />
 
             <EditText
                 android:id="@+id/editTextName"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text" />
+                android:layout_height="?attr/listPreferredItemHeight"
+                android:inputType="text"
+                android:textColor="@color/primaryText" />
 
             <TextView
                 android:id="@+id/textView3"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="?attr/listPreferredItemHeight"
+                android:gravity="center_vertical"
                 android:text="@string/type_label_text"
+                android:textAppearance="@android:style/TextAppearance.Large"
                 android:textColor="@color/primaryText" />
 
             <Spinner
                 android:id="@+id/spinner"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <Button
-                android:id="@+id/choose_on_map_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@null"
-                android:text="@string/choose_location_on_map_button_text"
-                android:textColor="@color/primaryText" />
+                android:layout_height="?attr/listPreferredItemHeight" />
 
             <TextView
                 android:id="@+id/textView5"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="?attr/listPreferredItemHeight"
+                android:gravity="center_vertical"
                 android:text="@string/address_text"
+                android:textAppearance="@android:style/TextAppearance.Large"
                 android:textColor="@color/primaryText" />
 
             <EditText
                 android:id="@+id/editText3"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="?attr/listPreferredItemHeight"
                 android:ems="10"
-                android:inputType="textPostalAddress" />
+                android:inputType="textPostalAddress"
+                android:textColor="@color/primaryText" />
 
             <TextView
                 android:id="@+id/textView4"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="?attr/listPreferredItemHeight"
+                android:gravity="center_vertical"
                 android:text="@string/comment_text"
+                android:textAppearance="@android:style/TextAppearance.Large"
                 android:textColor="@color/primaryText" />
 
             <EditText
@@ -86,12 +88,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:inputType="textMultiLine" />
+                android:inputType="textMultiLine"
+                android:minHeight="?attr/listPreferredItemHeight"
+                android:textColor="@color/primaryText" />
 
             <Button
                 android:id="@+id/add_location_button"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="?attr/listPreferredItemHeight"
                 android:background="@color/primary"
                 android:text="@string/add_location_button_text" />
         </LinearLayout>

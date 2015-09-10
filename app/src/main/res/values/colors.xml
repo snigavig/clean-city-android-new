@@ -9,5 +9,6 @@
     <color name="background">#e5e5e5</color>
     <color name="white">#fafafa</color>
     <color name="primaryText">#de000000</color>
+    <color name="inactive">@android:color/darker_gray</color>
     <color name="drawer_item_text">@color/white</color>
 </resources>

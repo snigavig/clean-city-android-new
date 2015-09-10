@@ -47,7 +47,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end|bottom"
             android:layout_margin="16dp"
-            android:src="@drawable/plus"
+            android:src="@drawable/ic_add_24dp"
             app:backgroundTint="@color/primaryBright"
             app:elevation="6dp"
             app:pressedTranslationZ="12dp"
