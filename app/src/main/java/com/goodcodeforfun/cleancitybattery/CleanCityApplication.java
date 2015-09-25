@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.activeandroid.ActiveAndroid;
 import com.goodcodeforfun.cleancitybattery.network.CleanCityApiService;
+import com.goodcodeforfun.cleancitybattery.network.NetworkService;
 import com.goodcodeforfun.cleancitybattery.util.SharedPreferencesHelper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -48,5 +49,8 @@ public class CleanCityApplication extends Application {
 
         networkService = retrofit.create(CleanCityApiService.class);
         ActiveAndroid.initialize(this);
+        //TODO: Move to scheduler
+        NetworkService.startActionGetListTypes(CleanCityApplication.getInstance());
+        NetworkService.startActionGetListLocations(CleanCityApplication.getInstance());
     }
 }

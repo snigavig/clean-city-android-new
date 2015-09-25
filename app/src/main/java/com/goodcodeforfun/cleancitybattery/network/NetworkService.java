@@ -10,6 +10,7 @@ import com.activeandroid.content.ContentProvider;
 import com.activeandroid.query.Select;
 import com.goodcodeforfun.cleancitybattery.CleanCityApplication;
 import com.goodcodeforfun.cleancitybattery.model.Location;
+import com.goodcodeforfun.cleancitybattery.model.Type;
 import com.goodcodeforfun.cleancitybattery.util.DeviceStateHelper;
 
 import java.io.IOException;
@@ -25,6 +26,8 @@ import retrofit.Response;
 public class NetworkService extends IntentService {
     public static final String ACTION_GET_LIST_LOCATIONS =
             "com.goodcodeforfun.cleancitybattery.network.action.GET_LIST_LOCATIONS";
+    public static final String ACTION_GET_LIST_TYPES =
+            "com.goodcodeforfun.cleancitybattery.network.action.GET_LIST_TYPES";
     public static final String ACTION_POST_LOCATION =
             "com.goodcodeforfun.cleancitybattery.network.action.POST_LOCATION";
     public static final String ACTION_BROADCAST =
@@ -44,6 +47,14 @@ public class NetworkService extends IntentService {
         context.startService(intent);
     }
 
+    public static void startActionGetListTypes(Context context) {
+        Intent intent = new Intent(context, NetworkService.class);
+        intent.setAction(ACTION_GET_LIST_TYPES);
+        context.startService(intent);
+    }
+
+    //TODO: use!
+    @SuppressWarnings("unused")
     public static void startActionPostLocation(Context context, String locationDbId) {
         Intent intent = new Intent(context, NetworkService.class);
         intent.setAction(ACTION_GET_LIST_LOCATIONS);
@@ -59,11 +70,41 @@ public class NetworkService extends IntentService {
                 case ACTION_GET_LIST_LOCATIONS:
                     handleActionGetListLocations();
                     break;
+                case ACTION_GET_LIST_TYPES:
+                    handleActionGetTypes();
+                    break;
                 case ACTION_POST_LOCATION:
                     final String locationDbId = intent.getStringExtra(EXTRA_LOCATION_DB_ID);
                     handleActionPostLocation(locationDbId);
                 default:
                     //wat
+            }
+        }
+    }
+
+    private void handleActionGetTypes() {
+        Call<List<Type>> typesCall = CleanCityApplication.getInstance().getNetworkService().listTypes();
+
+        Response<List<Type>> typesResponse = null;
+        try {
+            typesResponse = typesCall.execute();
+        } catch (IOException e) {
+            ErrorHandler.handleRetrofitError(e);
+        }
+        if (null != typesResponse) {
+            if (typesResponse.isSuccess()) {
+                ActiveAndroid.beginTransaction();
+                try {
+                    for (Type type : typesResponse.body()) {
+                        type.save();
+                    }
+                    ActiveAndroid.setTransactionSuccessful();
+                } finally {
+                    ActiveAndroid.endTransaction();
+                    getContentResolver().notifyChange(ContentProvider.createUri(Location.class, null), null);
+                }
+            } else {
+                ErrorHandler.handleErrorResponce(typesResponse.errorBody(), typesResponse.message(), typesResponse.code());
             }
         }
     }

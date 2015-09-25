@@ -16,6 +16,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -27,6 +28,7 @@ import com.goodcodeforfun.cleancitybattery.R;
 import com.goodcodeforfun.cleancitybattery.fragment.PointsListFragment;
 import com.goodcodeforfun.cleancitybattery.fragment.PointsMapFragment;
 import com.goodcodeforfun.cleancitybattery.model.Location;
+import com.goodcodeforfun.cleancitybattery.model.Type;
 import com.goodcodeforfun.cleancitybattery.network.ErrorHandler;
 import com.goodcodeforfun.cleancitybattery.network.NetworkService;
 import com.google.android.gms.maps.model.LatLng;
@@ -43,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements
     private static final int COUNTER_GOAL = 7;
     private static final String NAV_ITEM_ID = "navItemId";
     private static final int LOCATION_LOADER_ID = 1234;
+    private static final int TYPE_LOADER_ID = 1235;
     private final Handler mDrawerActionHandler = new Handler();
     private final PointsMapFragment mPointsMapFragment = new PointsMapFragment();
     private final PointsListFragment mPointsListFragment = new PointsListFragment();
@@ -54,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements
     private int mNavItemId;
     private LoaderManager mLoaderManager;
     private WeakReference<MainActivity> mainActivityWeakReference;
-    private LocationType mCurrentLocationType = LocationType.battery;
+    private String mCurrentLocationType = LocationType.battery.toString();
     private final LoaderManager.LoaderCallbacks<Cursor> mLocationLoaderCallbacks = new LoaderManager.LoaderCallbacks<Cursor>() {
 
         @Override
@@ -62,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements
             mProgressBar.setVisibility(View.VISIBLE);
             return new CursorLoader(MainActivity.this,
                     ContentProvider.createUri(Location.class, null),
-                    null, "Type = ?", new String[]{mCurrentLocationType.name()}, null
+                    null, "Type = ?", new String[]{mCurrentLocationType}, null
             );
 
         }
@@ -93,6 +96,55 @@ public class MainActivity extends AppCompatActivity implements
         @Override
         public void onLoaderReset(Loader<Cursor> loader) {
             mProgressBar.setVisibility(View.VISIBLE);
+        }
+    };
+    private Menu mMenu;
+    private final LoaderManager.LoaderCallbacks<Cursor> mTypesLoaderCallbacks = new LoaderManager.LoaderCallbacks<Cursor>() {
+
+        @Override
+        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+            mProgressBar.setVisibility(View.VISIBLE);
+            return new CursorLoader(MainActivity.this,
+                    ContentProvider.createUri(Type.class, null),
+                    null, null, null, null
+            );
+
+        }
+
+        @Override
+        public void onLoadFinished(Loader<Cursor> loader, final Cursor data) {
+            if (null != mMenu) {
+                int count = data.getCount();
+                if (count != 0) {
+                    for (data.moveToFirst(); !data.isAfterLast(); data.moveToNext()) {
+                        boolean isDefaultItem = false;
+                        final String name = data.getString(data.getColumnIndexOrThrow(Type.COLUMN_NAME));
+                        final String typeValue = data.getString(data.getColumnIndexOrThrow(Type.COLUMN_TYPE_VALUE));
+                        for (LocationType type : LocationType.values()) {
+                            //TODO: change "typeValue" to "name" as soon as this is fixed in API
+                            if (typeValue.equals(type.name()))
+                                isDefaultItem = true;
+                        }
+                        if (!isDefaultItem) {
+                            mMenu.add(typeValue);
+                            MenuItem item = mMenu.getItem(mMenu.size() - 1);
+                            item.setIcon(R.drawable.ic_cycle_24dp);
+                            item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                                @Override
+                                public boolean onMenuItemClick(MenuItem item) {
+                                    mCurrentLocationType = name;
+                                    return false;
+                                }
+                            });
+                        }
+                    }
+                    data.close();
+                }
+            }
+        }
+
+        @Override
+        public void onLoaderReset(Loader<Cursor> loader) {
         }
     };
 
@@ -138,12 +190,12 @@ public class MainActivity extends AppCompatActivity implements
                 NetworkService.ACTION_BROADCAST);
 
         ErrorHandler.ResponseReceiver responseReceiver =
-                new ErrorHandler.ResponseReceiver(findViewById(R.id.menu_item_add_location));
+                new ErrorHandler.ResponseReceiver(findViewById(R.id.button_add_location));
         LocalBroadcastManager.getInstance(this).registerReceiver(
                 responseReceiver,
                 statusIntentFilter);
 
-        findViewById(R.id.menu_item_add_location).setOnClickListener(this);
+        findViewById(R.id.button_add_location).setOnClickListener(this);
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
@@ -183,10 +235,8 @@ public class MainActivity extends AppCompatActivity implements
                 }
             }
         });
-
-        Intent mServiceGetIntent = new Intent(this, NetworkService.class);
-        mServiceGetIntent.setAction(NetworkService.ACTION_GET_LIST_LOCATIONS);
-        startService(mServiceGetIntent);
+        mMenu = navigationView.getMenu();
+        mLoaderManager.initLoader(TYPE_LOADER_ID, null, mTypesLoaderCallbacks);
     }
 
     private void setDrawerIndicator() {
@@ -197,6 +247,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     //Just an idea...
+    @SuppressWarnings("unused")
     public void setHomeAsUpIndicator() {
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.open,
                 R.string.close);
@@ -227,16 +278,16 @@ public class MainActivity extends AppCompatActivity implements
     private void navigate(final int itemId) {
         switch (itemId) {
             case R.id.drawer_item_1:
-                mCurrentLocationType = LocationType.battery;
+                mCurrentLocationType = LocationType.battery.name();
                 break;
             case R.id.drawer_item_2:
-                mCurrentLocationType = LocationType.glass;
+                mCurrentLocationType = LocationType.glass.name();
                 break;
             case R.id.drawer_item_3:
-                mCurrentLocationType = LocationType.paper;
+                mCurrentLocationType = LocationType.paper.name();
                 break;
             case R.id.drawer_item_4:
-                mCurrentLocationType = LocationType.plastic;
+                mCurrentLocationType = LocationType.plastic.name();
                 break;
             default:
                 // ignore
@@ -295,7 +346,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.menu_item_add_location:
+            case R.id.button_add_location:
                 Intent intent = new Intent(this, AddLocationActivity.class);
                 startActivity(intent);
                 break;

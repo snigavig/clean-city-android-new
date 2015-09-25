@@ -51,7 +51,7 @@
             android:value="1" />
         <meta-data
             android:name="AA_MODELS"
-            android:value="com.goodcodeforfun.cleancitybattery.model.Location" />
+            android:value="com.goodcodeforfun.cleancitybattery.model.Location, com.goodcodeforfun.cleancitybattery.model.Type" />
 
         <activity
             android:name=".activity.MainActivity"

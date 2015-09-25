@@ -1,6 +1,7 @@
 package com.goodcodeforfun.cleancitybattery.network;
 
 import com.goodcodeforfun.cleancitybattery.model.Location;
+import com.goodcodeforfun.cleancitybattery.model.Type;
 
 import java.util.List;
 
@@ -18,4 +19,8 @@ public interface CleanCityApiService {
 
     @POST("/locations")
     Call<Location> addLocation(@Body Location location);
+
+    @GET("/garbageTypes")
+    Call<List<Type>> listTypes();
+
 }
