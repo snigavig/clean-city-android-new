@@ -1,6 +1,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- group with single selected item so only one item is highlighted in the nav menu -->
-    <group android:checkableBehavior="single">
+    <group
+        android:id="@+id/default_group"
+        android:checkableBehavior="single">
         <item
             android:id="@+id/drawer_item_1"
             android:icon="@drawable/battery"
@@ -18,4 +20,6 @@
             android:icon="@drawable/plastic"
             android:title="@string/item_4" />
     </group>
+    <group android:id="@+id/custom_group" />
+    <group android:id="@+id/secondary_group" />
 </menu>

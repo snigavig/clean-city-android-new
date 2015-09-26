@@ -9,6 +9,7 @@ import com.activeandroid.ActiveAndroid;
 import com.activeandroid.content.ContentProvider;
 import com.activeandroid.query.Select;
 import com.goodcodeforfun.cleancitybattery.CleanCityApplication;
+import com.goodcodeforfun.cleancitybattery.activity.MainActivity;
 import com.goodcodeforfun.cleancitybattery.model.Location;
 import com.goodcodeforfun.cleancitybattery.model.Type;
 import com.goodcodeforfun.cleancitybattery.util.DeviceStateHelper;
@@ -62,6 +63,15 @@ public class NetworkService extends IntentService {
         context.startService(intent);
     }
 
+    public static boolean contains(String test) {
+        for (MainActivity.LocationType c : MainActivity.LocationType.values()) {
+            if (c.name().equals(test)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     protected void onHandleIntent(Intent intent) {
         if (intent != null && DeviceStateHelper.isApiConnected()) {
@@ -96,7 +106,9 @@ public class NetworkService extends IntentService {
                 ActiveAndroid.beginTransaction();
                 try {
                     for (Type type : typesResponse.body()) {
-                        type.save();
+                        if (!contains(type.getValue())) {
+                            type.save();
+                        }
                     }
                     ActiveAndroid.setTransactionSuccessful();
                 } finally {
@@ -104,7 +116,7 @@ public class NetworkService extends IntentService {
                     getContentResolver().notifyChange(ContentProvider.createUri(Location.class, null), null);
                 }
             } else {
-                ErrorHandler.handleErrorResponce(typesResponse.errorBody(), typesResponse.message(), typesResponse.code());
+                ErrorHandler.handleErrorResponse(typesResponse.errorBody(), typesResponse.message(), typesResponse.code());
             }
         }
     }
@@ -131,7 +143,7 @@ public class NetworkService extends IntentService {
                     getContentResolver().notifyChange(ContentProvider.createUri(Location.class, null), null);
                 }
             } else {
-                ErrorHandler.handleErrorResponce(locationsResponse.errorBody(), locationsResponse.message(), locationsResponse.code());
+                ErrorHandler.handleErrorResponse(locationsResponse.errorBody(), locationsResponse.message(), locationsResponse.code());
             }
         }
     }
@@ -157,7 +169,7 @@ public class NetworkService extends IntentService {
                         locationsResponse.body().save();
                         Toast.makeText(CleanCityApplication.getInstance(), "Location successfully added", Toast.LENGTH_SHORT).show();
                     } else {
-                        ErrorHandler.handleErrorResponce(locationsResponse.errorBody(), locationsResponse.message(), locationsResponse.code());
+                        ErrorHandler.handleErrorResponse(locationsResponse.errorBody(), locationsResponse.message(), locationsResponse.code());
                         Toast.makeText(CleanCityApplication.getInstance(), "Location not added, please try again", Toast.LENGTH_SHORT).show();
                     }
                 }

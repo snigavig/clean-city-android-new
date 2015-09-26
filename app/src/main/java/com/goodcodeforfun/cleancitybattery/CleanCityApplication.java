@@ -3,6 +3,9 @@ package com.goodcodeforfun.cleancitybattery;
 import android.app.Application;
 
 import com.activeandroid.ActiveAndroid;
+import com.activeandroid.Configuration;
+import com.goodcodeforfun.cleancitybattery.model.Location;
+import com.goodcodeforfun.cleancitybattery.model.Type;
 import com.goodcodeforfun.cleancitybattery.network.CleanCityApiService;
 import com.goodcodeforfun.cleancitybattery.network.NetworkService;
 import com.goodcodeforfun.cleancitybattery.util.SharedPreferencesHelper;
@@ -48,7 +51,10 @@ public class CleanCityApplication extends Application {
                 .build();
 
         networkService = retrofit.create(CleanCityApiService.class);
-        ActiveAndroid.initialize(this);
+        Configuration.Builder config = new Configuration.Builder(this);
+        config.addModelClasses(Location.class, Type.class);
+
+        ActiveAndroid.initialize(config.create());
         //TODO: Move to scheduler
         NetworkService.startActionGetListTypes(CleanCityApplication.getInstance());
         NetworkService.startActionGetListLocations(CleanCityApplication.getInstance());

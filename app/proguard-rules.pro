@@ -16,7 +16,70 @@
 #   public *;
 #}
 
+#appcompat
+-dontwarn android.support.v7.**
+-keep class android.support.v7.** { *; }
+-keep interface android.support.v7.** { *; }
+
+#retrofit
 -dontwarn retrofit.**
 -keep class retrofit.** { *; }
 -keepattributes Signature
 -keepattributes Exceptions
+
+#play-services
+-keep class * extends java.util.ListResourceBundle {
+    protected Object[][] getContents();
+}
+
+-keep public class com.google.android.gms.common.internal.safeparcel.SafeParcelable {
+    public static final *** NULL;
+}
+
+-keepnames @com.google.android.gms.common.annotation.KeepName class *
+-keepclassmembernames class * {
+    @com.google.android.gms.common.annotation.KeepName *;
+}
+
+-keepnames class * implements android.os.Parcelable {
+    public static final ** CREATOR;
+}
+
+# support design
+-dontwarn android.support.design.**
+-keep class android.support.design.** { *; }
+-keep interface android.support.design.** { *; }
+-keep public class android.support.design.R$* { *; }
+
+# The support library contains references to newer platform versions.
+# Don't warn about those in case this app is linking against an older
+# platform version.  We know about them, and they are safe.
+-dontwarn android.support.**
+
+#picasso
+-dontwarn com.squareup.okhttp.**
+
+# ActiveAndroid
+-keep class com.activeandroid.** { *; }
+-keep class com.activeandroid.**.** { *; }
+-keep class * extends com.activeandroid.Model
+-keep class * extends com.activeandroid.serializer.TypeSerializer
+-keep public class com.goodcodeforfun.cleancitybattery.model.**
+-keepattributes Column
+-keepattributes Table
+-keepclasseswithmembers class * { @com.activeandroid.annotation.Column <fields>; }
+
+#stuff
+-dontwarn org.apache.http.**
+-dontwarn android.net.http.AndroidHttpClient
+-dontwarn com.google.android.gms.**
+-dontwarn com.android.volley.toolbox.**
+
+#okio
+-keep class com.squareup.okhttp.** { *; }
+-keep interface com.squareup.okhttp.** { *; }
+-dontwarn okio.**
+
+-repackageclasses
+-overloadaggressively
+-allowaccessmodification

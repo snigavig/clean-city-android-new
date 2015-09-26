@@ -16,6 +16,7 @@ public class Location extends Model {
     public static final String COLUMN_LONGTITUDE = "Longtitude";
     public static final String COLUMN_TYPE = "Type";
     public static final String COLUMN_API_ID = "ApiId";
+    public static final String COLUMN_ADDRESS = "Address";
 
     @SerializedName("_id")
     @Expose
@@ -40,7 +41,29 @@ public class Location extends Model {
     @Expose
     @Column(name = COLUMN_TYPE)
     private String type;
+    @Expose
+    @Column(name = COLUMN_ADDRESS)
+    private String address;
 
+
+    /**
+     * @return The address
+     */
+    public String getAddress() {
+        return address;
+    }
+
+    /**
+     * @param address The address
+     */
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public Location withAddress(String address) {
+        this.address = address;
+        return this;
+    }
 
     /**
      * @return The type

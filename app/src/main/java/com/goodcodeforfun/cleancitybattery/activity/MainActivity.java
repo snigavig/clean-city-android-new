@@ -23,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.activeandroid.content.ContentProvider;
+import com.activeandroid.query.Select;
 import com.goodcodeforfun.cleancitybattery.CleanCityApplication;
 import com.goodcodeforfun.cleancitybattery.R;
 import com.goodcodeforfun.cleancitybattery.fragment.PointsListFragment;
@@ -37,6 +38,9 @@ import com.squareup.picasso.Picasso;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
@@ -45,10 +49,10 @@ public class MainActivity extends AppCompatActivity implements
     private static final int COUNTER_GOAL = 7;
     private static final String NAV_ITEM_ID = "navItemId";
     private static final int LOCATION_LOADER_ID = 1234;
-    private static final int TYPE_LOADER_ID = 1235;
     private final Handler mDrawerActionHandler = new Handler();
     private final PointsMapFragment mPointsMapFragment = new PointsMapFragment();
     private final PointsListFragment mPointsListFragment = new PointsListFragment();
+    private HashMap<MenuItem, String> CUSTOM_TYPES = new HashMap<>();
     private int counter = 0;
     private DrawerLayout mDrawerLayout;
     private Toolbar mToolbar;
@@ -96,55 +100,6 @@ public class MainActivity extends AppCompatActivity implements
         @Override
         public void onLoaderReset(Loader<Cursor> loader) {
             mProgressBar.setVisibility(View.VISIBLE);
-        }
-    };
-    private Menu mMenu;
-    private final LoaderManager.LoaderCallbacks<Cursor> mTypesLoaderCallbacks = new LoaderManager.LoaderCallbacks<Cursor>() {
-
-        @Override
-        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-            mProgressBar.setVisibility(View.VISIBLE);
-            return new CursorLoader(MainActivity.this,
-                    ContentProvider.createUri(Type.class, null),
-                    null, null, null, null
-            );
-
-        }
-
-        @Override
-        public void onLoadFinished(Loader<Cursor> loader, final Cursor data) {
-            if (null != mMenu) {
-                int count = data.getCount();
-                if (count != 0) {
-                    for (data.moveToFirst(); !data.isAfterLast(); data.moveToNext()) {
-                        boolean isDefaultItem = false;
-                        final String name = data.getString(data.getColumnIndexOrThrow(Type.COLUMN_NAME));
-                        final String typeValue = data.getString(data.getColumnIndexOrThrow(Type.COLUMN_TYPE_VALUE));
-                        for (LocationType type : LocationType.values()) {
-                            //TODO: change "typeValue" to "name" as soon as this is fixed in API
-                            if (typeValue.equals(type.name()))
-                                isDefaultItem = true;
-                        }
-                        if (!isDefaultItem) {
-                            mMenu.add(typeValue);
-                            MenuItem item = mMenu.getItem(mMenu.size() - 1);
-                            item.setIcon(R.drawable.ic_cycle_24dp);
-                            item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                                @Override
-                                public boolean onMenuItemClick(MenuItem item) {
-                                    mCurrentLocationType = name;
-                                    return false;
-                                }
-                            });
-                        }
-                    }
-                    data.close();
-                }
-            }
-        }
-
-        @Override
-        public void onLoaderReset(Loader<Cursor> loader) {
         }
     };
 
@@ -210,9 +165,27 @@ public class MainActivity extends AppCompatActivity implements
         // listen for navigation events
         NavigationView navigationView = (NavigationView) findViewById(R.id.navigation);
         navigationView.setNavigationItemSelectedListener(this);
+        Menu mMenu = navigationView.getMenu();
+
+        List<Type> customTypes = new Select().from(Type.class).execute();
+
+        for (Type type : customTypes) {
+            final String name = type.getName();
+            final String typeValue = type.getValue();
+            int newId = mMenu.size();
+            MenuItem item =
+                    mMenu.add(R.id.default_group, newId, Menu.NONE, name);
+            item.setIcon(R.drawable.ic_cycle_24dp);
+            if (!CUSTOM_TYPES.containsKey(item))
+                CUSTOM_TYPES.put(item, typeValue);
+        }
 
         // select the correct nav menu item
-        navigationView.getMenu().findItem(mNavItemId).setChecked(true);
+        if (null != mMenu) {
+            MenuItem item = mMenu.findItem(mNavItemId);
+            if (null != item)
+                item.setChecked(true);
+        }
         setDrawerIndicator();
         // set up the hamburger icon to open and close the drawer
         getSupportFragmentManager()
@@ -235,8 +208,6 @@ public class MainActivity extends AppCompatActivity implements
                 }
             }
         });
-        mMenu = navigationView.getMenu();
-        mLoaderManager.initLoader(TYPE_LOADER_ID, null, mTypesLoaderCallbacks);
     }
 
     private void setDrawerIndicator() {
@@ -290,7 +261,7 @@ public class MainActivity extends AppCompatActivity implements
                 mCurrentLocationType = LocationType.plastic.name();
                 break;
             default:
-                // ignore
+                //ignore
                 break;
         }
     }
@@ -298,6 +269,14 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public boolean onNavigationItemSelected(final MenuItem menuItem) {
         // update highlighted item in the navigation menu
+        // custom type
+        for (Map.Entry<MenuItem, String> item : CUSTOM_TYPES.entrySet()) {
+            if (menuItem.getItemId() == item.getKey().getItemId()) {
+                mCurrentLocationType = item.getValue();
+                menuItem.setCheckable(true);
+            }
+        }
+
         menuItem.setChecked(true);
         mNavItemId = menuItem.getItemId();
 

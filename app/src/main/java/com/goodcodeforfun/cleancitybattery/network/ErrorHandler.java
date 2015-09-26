@@ -25,7 +25,7 @@ public class ErrorHandler {
         broadcastMessage("Ой, вибачте, невеличкі проблеми");
     }
 
-    public static void handleErrorResponce(ResponseBody errorBody, String message, int code) {
+    public static void handleErrorResponse(ResponseBody errorBody, String message, int code) {
         Log.d(CleanCityApplication.LOG_TAG, String.valueOf(code));
         Log.d(CleanCityApplication.LOG_TAG, message);
         Log.d(CleanCityApplication.LOG_TAG, errorBody.toString());

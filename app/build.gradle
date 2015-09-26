@@ -1,30 +1,60 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        release
+    }
     compileSdkVersion 23
     buildToolsVersion "23.0.1"
-
     defaultConfig {
         applicationId "com.goodcodeforfun.cleancitybattery"
         minSdkVersion 16
         targetSdkVersion 23
-        versionCode 7
-        versionName "0.2.5"
+        versionCode 9
+        versionName "0.2.6"
     }
     buildTypes {
-        release {
+        debug {
             minifyEnabled false
+            zipAlignEnabled false
+        }
+        release {
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            zipAlignEnabled true
+            signingConfig signingConfigs.release
         }
     }
+    productFlavors {
+    }
+}
+
+def Properties props = new Properties()
+def propFile = file('../signing.properties')
+if (propFile.canRead()) {
+    props.load(new FileInputStream(propFile))
+
+    if (props != null && props.containsKey('STORE_FILE') && props.containsKey('STORE_PASSWORD') &&
+            props.containsKey('KEY_ALIAS') && props.containsKey('KEY_PASSWORD')) {
+
+        android.signingConfigs.release.storeFile = file(props['STORE_FILE'])
+        android.signingConfigs.release.storePassword = props['STORE_PASSWORD']
+        android.signingConfigs.release.keyAlias = props['KEY_ALIAS']
+        android.signingConfigs.release.keyPassword = props['KEY_PASSWORD']
+    } else {
+        android.buildTypes.release.signingConfig = null
+    }
+} else {
+    android.buildTypes.release.signingConfig = null
 }
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.0.1'
+    //Do not update PS, location library is not ready yet.
+    //TODO: compile only specific parts of PS, to minify apk size.
     compile 'com.google.android.gms:play-services:7.8.0'
-    //Do not update, location library is not ready yet.
     compile 'com.android.support:design:23.0.1'
     compile 'com.squareup.retrofit:retrofit:2.0.0-beta1'
     compile 'com.android.support:support-v4:23.0.1'

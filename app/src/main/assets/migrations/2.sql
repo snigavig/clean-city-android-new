@@ -1,0 +1,1 @@
+ALTER TABLE Locations ADD Address TEXT;

@@ -3,6 +3,7 @@ package com.goodcodeforfun.cleancitybattery.activity;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
+import android.location.Address;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
@@ -24,6 +25,11 @@ import com.goodcodeforfun.cleancitybattery.network.ErrorHandler;
 import com.goodcodeforfun.cleancitybattery.network.NetworkService;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.List;
+
+import io.nlopez.smartlocation.OnReverseGeocodingListener;
+import io.nlopez.smartlocation.SmartLocation;
+
 /**
  * Created by snigavig on 06.09.15.
  */
@@ -32,7 +38,7 @@ public class AddLocationActivity extends AppCompatActivity implements View.OnCli
     private LatLng mPosition;
     private Spinner mSpinner;
     private EditText editTextName;
-    private EditText address;
+    private EditText editTextAddress;
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,14 +55,14 @@ public class AddLocationActivity extends AppCompatActivity implements View.OnCli
         mSpinner = (Spinner) findViewById(R.id.spinner);
         mSpinner.setAdapter(new ArrayAdapter<>(this, R.layout.spinner_dropdown_item, MainActivity.LocationType.values()));
         findViewById(R.id.add_location_button).setOnClickListener(this);
-        address = (EditText) findViewById(R.id.editText3);
-        address.setOnTouchListener(new View.OnTouchListener() {
+        editTextAddress = (EditText) findViewById(R.id.editTextAddress);
+        editTextAddress.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 final int DRAWABLE_RIGHT = 2;
 
                 if (event.getAction() == MotionEvent.ACTION_UP) {
-                    if (event.getRawX() >= (address.getRight() - address.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                    if (event.getRawX() >= (editTextAddress.getRight() - editTextAddress.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
                         Intent intent = new Intent(CleanCityApplication.getInstance(), ChooseLocationOnMapActivity.class);
                         startActivityForResult(intent, CHOOSE_ON_MAP_REQUEST);
                         return true;
@@ -106,6 +112,7 @@ public class AddLocationActivity extends AppCompatActivity implements View.OnCli
                     Location location = new Location();
                     location.setName(editTextName.getText().toString());
                     location.setType(type.name());
+                    location.setAddress(editTextAddress.getText().toString());
                     location.setLatitude(mPosition.latitude);
                     location.setLongitude(mPosition.longitude);
                     location.save();
@@ -127,10 +134,22 @@ public class AddLocationActivity extends AppCompatActivity implements View.OnCli
         if (requestCode == CHOOSE_ON_MAP_REQUEST) {
             if (resultCode == RESULT_OK) {
                 setLocationIconGreenTint();
-                mPosition = new LatLng(
-                        data.getDoubleExtra(ChooseLocationOnMapActivity.POSITION_LAT_KEY, 0),
-                        data.getDoubleExtra(ChooseLocationOnMapActivity.POSITION_LON_KEY, 0)
-                );
+                double lat = data.getDoubleExtra(ChooseLocationOnMapActivity.POSITION_LAT_KEY, 0);
+                double lng = data.getDoubleExtra(ChooseLocationOnMapActivity.POSITION_LON_KEY, 0);
+                mPosition = new LatLng(lat, lng);
+                android.location.Location targetLocation = new android.location.Location("");//provider name is unecessary
+                targetLocation.setLatitude(lat);
+                targetLocation.setLongitude(lng);
+
+                SmartLocation.with(CleanCityApplication.getInstance()).geocoding()
+                        .reverse(targetLocation, new OnReverseGeocodingListener() {
+                            @Override
+                            public void onAddressResolved(android.location.Location location, List<Address> list) {
+                                if (null != editTextAddress)
+                                    editTextAddress.setText(list.get(0).getAddressLine(0));
+                                list.clear();
+                            }
+                        });
             }
         }
     }
@@ -139,13 +158,13 @@ public class AddLocationActivity extends AppCompatActivity implements View.OnCli
         Drawable normalDrawable = ContextCompat.getDrawable(this, R.drawable.ic_pin_drop_24dp1);
         Drawable wrapDrawable = DrawableCompat.wrap(normalDrawable);
         DrawableCompat.setTint(wrapDrawable, ContextCompat.getColor(this, R.color.inactive));
-        address.setCompoundDrawablesWithIntrinsicBounds(null, null, wrapDrawable, null);
+        editTextAddress.setCompoundDrawablesWithIntrinsicBounds(null, null, wrapDrawable, null);
     }
 
     private void setLocationIconGreenTint() {
         Drawable normalDrawable = ContextCompat.getDrawable(this, R.drawable.ic_pin_drop_24dp1);
         Drawable wrapDrawable = DrawableCompat.wrap(normalDrawable);
         DrawableCompat.setTint(wrapDrawable, ContextCompat.getColor(this, R.color.primary));
-        address.setCompoundDrawablesWithIntrinsicBounds(null, null, wrapDrawable, null);
+        editTextAddress.setCompoundDrawablesWithIntrinsicBounds(null, null, wrapDrawable, null);
     }
 }
