@@ -33,7 +33,7 @@
     <application
         android:name=".CleanCityApplication"
         android:allowBackup="true"
-        android:icon="@drawable/icon_green"
+        android:icon="@drawable/icon_cleancity"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <meta-data
@@ -45,7 +45,7 @@
             android:value="AIzaSyDlSQtiZvPB1UUyCGn3UC3EDzekqi3zRUI" />
         <meta-data
             android:name="AA_DB_NAME"
-            android:value="dacadoo.db" />
+            android:value="cleancity.db" />
         <meta-data
             android:name="AA_DB_VERSION"
             android:value="2" />
