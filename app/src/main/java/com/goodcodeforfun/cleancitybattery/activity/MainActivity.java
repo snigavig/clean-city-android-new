@@ -91,6 +91,7 @@ public class MainActivity extends AppCompatActivity implements
                 if (data.getCount() != 0) {
                     LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
                     ArrayList<LatLng> mArrayList = new ArrayList<>();
+                    HashMap<String, LatLng> map = new HashMap<>();
                     LatLng position;
                     for (data.moveToFirst(); !data.isAfterLast(); data.moveToNext()) {
                         position = new LatLng(
@@ -99,9 +100,10 @@ public class MainActivity extends AppCompatActivity implements
                         );
                         boundsBuilder.include(position);
                         mArrayList.add(position);
+                        map.put(data.getString(data.getColumnIndexOrThrow(Location.COLUMN_API_ID)), position);
                     }
                     hideProgress();
-                    mPointsMapFragment.updateMap(mArrayList, boundsBuilder.build());
+                    mPointsMapFragment.updateMap(mArrayList, boundsBuilder.build(), map);
                 } else {
                     mPointsMapFragment.clearMap();
                 }
@@ -121,6 +123,10 @@ public class MainActivity extends AppCompatActivity implements
             }
         }
         return null;
+    }
+
+    public LocationDetailsFragment getLocationDetailsFragment() {
+        return mLocationDetailsFragment;
     }
 
     public FloatingActionButton getFloatingActionButton() {
@@ -409,6 +415,7 @@ public class MainActivity extends AppCompatActivity implements
     public void onUpdateMapAfterUserInterection() {
         if (SlidingUpPanelLayout.PanelState.HIDDEN != mPointsMapFragment.getLayout().getPanelState()) {
             mPointsMapFragment.getLayout().setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+            mPointsMapFragment.getGoogleMap().getUiSettings().setMapToolbarEnabled(false);
             getFloatingActionButton().show();
         }
     }

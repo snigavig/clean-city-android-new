@@ -32,6 +32,8 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
@@ -43,6 +45,10 @@ public class PointsMapFragment extends Fragment implements OnMapReadyCallback, G
     private ClickableMapView mapView;
     private SlidingUpPanelLayout mLayout;
 
+    public GoogleMap getGoogleMap() {
+        return mGoogleMap;
+    }
+
     public SlidingUpPanelLayout getLayout() {
         return mLayout;
     }
@@ -52,7 +58,7 @@ public class PointsMapFragment extends Fragment implements OnMapReadyCallback, G
             mGoogleMap.clear();
     }
 
-    public void updateMap(ArrayList<LatLng> points, LatLngBounds bounds) {
+    public void updateMap(ArrayList<LatLng> points, LatLngBounds bounds, HashMap<String, LatLng> map) {
         if (null != mGoogleMap) {
             mGoogleMap.clear();
 
@@ -65,10 +71,11 @@ public class PointsMapFragment extends Fragment implements OnMapReadyCallback, G
                 shape.draw(canvas);
             }
 
-            for (LatLng point : points
+            for (Map.Entry<String, LatLng> entry : map.entrySet()
                     ) {
                 mGoogleMap.addMarker(new MarkerOptions()
-                                .position(point)
+                                .position(entry.getValue())
+                                .snippet(entry.getKey())
                                 .icon(BitmapDescriptorFactory.fromBitmap(markerBitmap))
                 );
             }
@@ -181,8 +188,11 @@ public class PointsMapFragment extends Fragment implements OnMapReadyCallback, G
 
     @Override
     public boolean onMarkerClick(Marker marker) {
+        getGoogleMap().getUiSettings().setMapToolbarEnabled(true);
         mLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
         mainActivityWeakReference.get().getFloatingActionButton().hide();
+        mainActivityWeakReference.get().getLocationDetailsFragment().setCurrentLocation(marker.getSnippet());
+        //not sure about legitimacy of this, but works
         return false;
     }
 }
