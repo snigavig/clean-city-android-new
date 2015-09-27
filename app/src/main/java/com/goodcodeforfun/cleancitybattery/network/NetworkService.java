@@ -10,6 +10,7 @@ import com.activeandroid.content.ContentProvider;
 import com.activeandroid.query.Select;
 import com.goodcodeforfun.cleancitybattery.CleanCityApplication;
 import com.goodcodeforfun.cleancitybattery.activity.MainActivity;
+import com.goodcodeforfun.cleancitybattery.event.LocationsUpdateEvent;
 import com.goodcodeforfun.cleancitybattery.model.Location;
 import com.goodcodeforfun.cleancitybattery.model.Type;
 import com.goodcodeforfun.cleancitybattery.util.DeviceStateHelper;
@@ -93,7 +94,8 @@ public class NetworkService extends IntentService {
     }
 
     private void handleActionGetTypes() {
-        Call<List<Type>> typesCall = CleanCityApplication.getInstance().getNetworkService().listTypes();
+        Call<List<Type>> typesCall =
+                CleanCityApplication.getInstance().getNetworkService().listTypes();
 
         Response<List<Type>> typesResponse = null;
         try {
@@ -108,21 +110,40 @@ public class NetworkService extends IntentService {
                     for (Type type : typesResponse.body()) {
                         if (!contains(type.getValue())) {
                             type.save();
+                            getContentResolver()
+                                    .notifyChange(
+                                            ContentProvider.createUri(Type.class, null),
+                                            null
+                                    );
                         }
                     }
                     ActiveAndroid.setTransactionSuccessful();
                 } finally {
                     ActiveAndroid.endTransaction();
-                    getContentResolver().notifyChange(ContentProvider.createUri(Location.class, null), null);
                 }
             } else {
-                ErrorHandler.handleErrorResponse(typesResponse.errorBody(), typesResponse.message(), typesResponse.code());
+                ErrorHandler
+                        .handleErrorResponse(
+                                typesResponse.errorBody(),
+                                typesResponse.message(),
+                                typesResponse.code()
+                        );
             }
         }
     }
 
     private void handleActionGetListLocations() {
-        Call<List<Location>> locationsCall = CleanCityApplication.getInstance().getNetworkService().listLocations();
+        CleanCityApplication
+                .getInstance()
+                .getEventBusHelper()
+                .getBus()
+                .post(
+                        new LocationsUpdateEvent(
+                                LocationsUpdateEvent.LocationUpdateEventType.STARTED,
+                                LocationsUpdateEvent.NO_CODE)
+                );
+        Call<List<Location>> locationsCall =
+                CleanCityApplication.getInstance().getNetworkService().listLocations();
 
         Response<List<Location>> locationsResponse = null;
         try {
@@ -136,14 +157,32 @@ public class NetworkService extends IntentService {
                 try {
                     for (Location location : locationsResponse.body()) {
                         location.save();
+                        getContentResolver()
+                                .notifyChange(
+                                        ContentProvider.createUri(Location.class, null),
+                                        null
+                                );
                     }
                     ActiveAndroid.setTransactionSuccessful();
                 } finally {
                     ActiveAndroid.endTransaction();
-                    getContentResolver().notifyChange(ContentProvider.createUri(Location.class, null), null);
+                    CleanCityApplication
+                            .getInstance()
+                            .getEventBusHelper()
+                            .getBus()
+                            .post(
+                                    new LocationsUpdateEvent(
+                                            LocationsUpdateEvent.LocationUpdateEventType.COMPLETED,
+                                            LocationsUpdateEvent.OK_RESULT_CODE)
+                            );
                 }
             } else {
-                ErrorHandler.handleErrorResponse(locationsResponse.errorBody(), locationsResponse.message(), locationsResponse.code());
+                ErrorHandler
+                        .handleErrorResponse(
+                                locationsResponse.errorBody(),
+                                locationsResponse.message(),
+                                locationsResponse.code()
+                        );
             }
         }
     }
@@ -159,7 +198,8 @@ public class NetworkService extends IntentService {
             location.setUser(null);
             location.setApiId(null);
 
-            Call<Location> locationCall = CleanCityApplication.getInstance().getNetworkService().addLocation(location);
+            Call<Location> locationCall =
+                    CleanCityApplication.getInstance().getNetworkService().addLocation(location);
 
             location.delete();
             try {
@@ -167,10 +207,23 @@ public class NetworkService extends IntentService {
                 if (null != locationsResponse && null != locationsResponse.body()) {
                     if (locationsResponse.isSuccess()) {
                         locationsResponse.body().save();
-                        Toast.makeText(CleanCityApplication.getInstance(), "Location successfully added", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(
+                                CleanCityApplication.getInstance(),
+                                "Location successfully added",
+                                Toast.LENGTH_SHORT
+                        ).show();
                     } else {
-                        ErrorHandler.handleErrorResponse(locationsResponse.errorBody(), locationsResponse.message(), locationsResponse.code());
-                        Toast.makeText(CleanCityApplication.getInstance(), "Location not added, please try again", Toast.LENGTH_SHORT).show();
+                        ErrorHandler
+                                .handleErrorResponse(
+                                        locationsResponse.errorBody(),
+                                        locationsResponse.message(),
+                                        locationsResponse.code()
+                                );
+                        Toast.makeText(
+                                CleanCityApplication.getInstance(),
+                                "Location not added, please try again",
+                                Toast.LENGTH_SHORT
+                        ).show();
                     }
                 }
             } catch (IOException e) {

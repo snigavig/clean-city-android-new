@@ -8,6 +8,7 @@ import com.goodcodeforfun.cleancitybattery.model.Location;
 import com.goodcodeforfun.cleancitybattery.model.Type;
 import com.goodcodeforfun.cleancitybattery.network.CleanCityApiService;
 import com.goodcodeforfun.cleancitybattery.network.NetworkService;
+import com.goodcodeforfun.cleancitybattery.util.EventBusHelper;
 import com.goodcodeforfun.cleancitybattery.util.SharedPreferencesHelper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -25,10 +26,15 @@ public class CleanCityApplication extends Application {
     public static final String FULL_URL = BASE_URL + ":" + PORT;
     private static SharedPreferencesHelper mSharedPreferencesHelper;
     private static CleanCityApplication mInstance;
+    private EventBusHelper mEventBusHelper;
     private CleanCityApiService networkService;
 
     public static CleanCityApplication getInstance() {
         return mInstance;
+    }
+
+    public EventBusHelper getEventBusHelper() {
+        return mEventBusHelper;
     }
 
     public CleanCityApiService getNetworkService() {
@@ -43,6 +49,7 @@ public class CleanCityApplication extends Application {
     public void onCreate() {
         super.onCreate();
         mSharedPreferencesHelper = new SharedPreferencesHelper(this);
+        mEventBusHelper = new EventBusHelper();
         mInstance = this;
         Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
         Retrofit retrofit = new Retrofit.Builder()

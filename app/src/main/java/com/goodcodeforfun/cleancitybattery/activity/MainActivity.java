@@ -26,6 +26,7 @@ import com.activeandroid.content.ContentProvider;
 import com.activeandroid.query.Select;
 import com.goodcodeforfun.cleancitybattery.CleanCityApplication;
 import com.goodcodeforfun.cleancitybattery.R;
+import com.goodcodeforfun.cleancitybattery.event.LocationsUpdateEvent;
 import com.goodcodeforfun.cleancitybattery.fragment.PointsListFragment;
 import com.goodcodeforfun.cleancitybattery.fragment.PointsMapFragment;
 import com.goodcodeforfun.cleancitybattery.model.Location;
@@ -34,6 +35,7 @@ import com.goodcodeforfun.cleancitybattery.network.ErrorHandler;
 import com.goodcodeforfun.cleancitybattery.network.NetworkService;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 
 import java.lang.ref.WeakReference;
@@ -48,6 +50,7 @@ public class MainActivity extends AppCompatActivity implements
     private static final long DRAWER_CLOSE_DELAY_MS = 250;
     private static final int COUNTER_GOAL = 7;
     private static final String NAV_ITEM_ID = "navItemId";
+    private static final String CURRENT_LOCATION_TYPE = "currentLocationType";
     private static final int LOCATION_LOADER_ID = 1234;
     private final Handler mDrawerActionHandler = new Handler();
     private final PointsMapFragment mPointsMapFragment = new PointsMapFragment();
@@ -61,12 +64,14 @@ public class MainActivity extends AppCompatActivity implements
     private int mNavItemId;
     private LoaderManager mLoaderManager;
     private WeakReference<MainActivity> mainActivityWeakReference;
-    private String mCurrentLocationType = LocationType.battery.toString();
+    private String mCurrentLocationType;
     private final LoaderManager.LoaderCallbacks<Cursor> mLocationLoaderCallbacks = new LoaderManager.LoaderCallbacks<Cursor>() {
 
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-            mProgressBar.setVisibility(View.VISIBLE);
+            if (null != mPointsMapFragment && mPointsMapFragment.isVisible())
+                mPointsMapFragment.clearMap();
+            showProgress();
             return new CursorLoader(MainActivity.this,
                     ContentProvider.createUri(Location.class, null),
                     null, "Type = ?", new String[]{mCurrentLocationType}, null
@@ -89,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements
                         boundsBuilder.include(position);
                         mArrayList.add(position);
                     }
-                    mProgressBar.setVisibility(View.GONE);
+                    hideProgress();
                     mPointsMapFragment.updateMap(mArrayList, boundsBuilder.build());
                 } else {
                     mPointsMapFragment.clearMap();
@@ -99,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements
 
         @Override
         public void onLoaderReset(Loader<Cursor> loader) {
-            mProgressBar.setVisibility(View.VISIBLE);
+            showProgress();
         }
     };
 
@@ -110,12 +115,6 @@ public class MainActivity extends AppCompatActivity implements
             }
         }
         return null;
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        restartLocationsLoader();
     }
 
     @Override
@@ -132,10 +131,9 @@ public class MainActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_main);
 
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
-        mProgressBar.setVisibility(View.VISIBLE);
+        showProgress();
 
         mLoaderManager = getSupportLoaderManager();
-        mLoaderManager.initLoader(LOCATION_LOADER_ID, null, mLocationLoaderCallbacks);
 
         mainActivityWeakReference = new WeakReference<>(this);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -158,8 +156,10 @@ public class MainActivity extends AppCompatActivity implements
         // load saved navigation state if present
         if (null == savedInstanceState) {
             mNavItemId = R.id.drawer_item_1;
+            mCurrentLocationType = LocationType.battery.name();
         } else {
             mNavItemId = savedInstanceState.getInt(NAV_ITEM_ID);
+            mCurrentLocationType = savedInstanceState.getString(CURRENT_LOCATION_TYPE);
         }
 
         // listen for navigation events
@@ -173,8 +173,8 @@ public class MainActivity extends AppCompatActivity implements
             final String name = type.getName();
             final String typeValue = type.getValue();
             int newId = mMenu.size();
-            MenuItem item =
-                    mMenu.add(R.id.default_group, newId, Menu.NONE, name);
+            MenuItem item = mMenu.add(R.id.default_group, newId, Menu.NONE, name);
+            item.setCheckable(true);
             item.setIcon(R.drawable.ic_cycle_24dp);
             if (!CUSTOM_TYPES.containsKey(item))
                 CUSTOM_TYPES.put(item, typeValue);
@@ -194,6 +194,8 @@ public class MainActivity extends AppCompatActivity implements
                 .commit();
         navigate(mNavItemId);
 
+        restartLocationsLoader();
+        CleanCityApplication.getInstance().getEventBusHelper().getBus().register(this);
         ImageView avatar = (ImageView) findViewById(R.id.avatarImageView);
         Picasso.with(this).load(R.drawable.cat_default_avatar).into(avatar);
         avatar.setOnClickListener(new View.OnClickListener() {
@@ -261,7 +263,12 @@ public class MainActivity extends AppCompatActivity implements
                 mCurrentLocationType = LocationType.plastic.name();
                 break;
             default:
-                //ignore
+                // custom type
+                for (Map.Entry<MenuItem, String> item : CUSTOM_TYPES.entrySet()) {
+                    if (itemId == item.getKey().getItemId()) {
+                        mCurrentLocationType = item.getValue();
+                    }
+                }
                 break;
         }
     }
@@ -269,14 +276,6 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public boolean onNavigationItemSelected(final MenuItem menuItem) {
         // update highlighted item in the navigation menu
-        // custom type
-        for (Map.Entry<MenuItem, String> item : CUSTOM_TYPES.entrySet()) {
-            if (menuItem.getItemId() == item.getKey().getItemId()) {
-                mCurrentLocationType = item.getValue();
-                menuItem.setCheckable(true);
-            }
-        }
-
         menuItem.setChecked(true);
         mNavItemId = menuItem.getItemId();
 
@@ -320,6 +319,7 @@ public class MainActivity extends AppCompatActivity implements
     protected void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(NAV_ITEM_ID, mNavItemId);
+        outState.putString(CURRENT_LOCATION_TYPE, mCurrentLocationType);
     }
 
     @Override
@@ -337,6 +337,43 @@ public class MainActivity extends AppCompatActivity implements
     public void restartLocationsLoader() {
         if (null != mLoaderManager)
             mLoaderManager.restartLoader(LOCATION_LOADER_ID, null, mLocationLoaderCallbacks);
+    }
+
+    @Subscribe
+    public void newLocationsUpdate(LocationsUpdateEvent event) {
+        switch ((LocationsUpdateEvent.LocationUpdateEventType) event.getType()) {
+            case STARTED:
+                showProgress();
+                break;
+            case COMPLETED:
+                hideProgress();
+                switch (event.getResultCode()) {
+                    case LocationsUpdateEvent.OK_RESULT_CODE:
+                        restartLocationsLoader();
+                        break;
+                    case LocationsUpdateEvent.FAIL_RESULT_CODE:
+                        //TODO: think
+                        break;
+                    default:
+                        //no!
+                        break;
+                }
+                break;
+            default:
+                //nthn
+                break;
+
+        }
+    }
+
+    private void showProgress() {
+        if (null != mProgressBar)
+            mProgressBar.setVisibility(View.VISIBLE);
+    }
+
+    private void hideProgress() {
+        if (null != mProgressBar)
+            mProgressBar.setVisibility(View.GONE);
     }
 
     public enum LocationType {
