@@ -108,6 +108,7 @@ public class PointsMapFragment extends Fragment implements OnMapReadyCallback {
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        googleMap.setMyLocationEnabled(true);
         mGoogleMap = googleMap;
 
         Location lastLocation = SmartLocation.with(CleanCityApplication.getInstance()).location().getLastLocation();
