@@ -1,9 +1,13 @@
 package com.goodcodeforfun.cleancitybattery.fragment;
 
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -44,11 +48,21 @@ public class PointsMapFragment extends Fragment implements OnMapReadyCallback {
     public void updateMap(ArrayList<LatLng> points, LatLngBounds bounds) {
         if (null != mGoogleMap) {
             mGoogleMap.clear();
+
+            int px = getResources().getDimensionPixelSize(R.dimen.map_marker_size);
+            Bitmap markerBitmap = Bitmap.createBitmap(px, px, Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(markerBitmap);
+            Drawable shape = ContextCompat.getDrawable(CleanCityApplication.getInstance(), R.drawable.ic_place_24dp);
+            if (shape != null) {
+                shape.setBounds(0, 0, markerBitmap.getWidth(), markerBitmap.getHeight());
+                shape.draw(canvas);
+            }
+
             for (LatLng point : points
                     ) {
                 mGoogleMap.addMarker(new MarkerOptions()
                                 .position(point)
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.location_icon))
+                                .icon(BitmapDescriptorFactory.fromBitmap(markerBitmap))
                 );
             }
         }

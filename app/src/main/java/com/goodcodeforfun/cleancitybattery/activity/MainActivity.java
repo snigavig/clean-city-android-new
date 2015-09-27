@@ -234,6 +234,7 @@ public class MainActivity extends AppCompatActivity implements
         mDrawerToggle.syncState();
     }
 
+    //TODO: make them show/ide instead of replace.
     public void showList() {
         getSupportFragmentManager()
                 .beginTransaction()
