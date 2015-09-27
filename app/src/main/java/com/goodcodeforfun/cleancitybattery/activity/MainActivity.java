@@ -190,7 +190,12 @@ public class MainActivity extends AppCompatActivity implements
         // set up the hamburger icon to open and close the drawer
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.content, mPointsMapFragment)
+                .replace(R.id.contentMap, mPointsMapFragment)
+                .commit();
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.contentList, mPointsListFragment).hide(mPointsListFragment)
                 .commit();
         navigate(mNavItemId);
 
@@ -238,14 +243,20 @@ public class MainActivity extends AppCompatActivity implements
     public void showList() {
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.content, mPointsListFragment)
+                .setCustomAnimations(android.R.anim.slide_in_left,
+                        android.R.anim.slide_out_right)
+                .hide(mPointsMapFragment)
+                .show(mPointsListFragment)
                 .commit();
     }
 
     public void showMap() {
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.content, mPointsMapFragment)
+                .setCustomAnimations(android.R.anim.slide_in_left,
+                        android.R.anim.slide_out_right)
+                .hide(mPointsListFragment)
+                .show(mPointsMapFragment)
                 .commit();
     }
 

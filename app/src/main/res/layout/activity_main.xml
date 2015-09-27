@@ -28,11 +28,19 @@
         <!-- Real content goes here -->
 
         <FrameLayout
-            android:id="@+id/content"
+            android:id="@+id/contentMap"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
         </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/contentList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </FrameLayout>
+
 
         <ProgressBar
             android:id="@+id/progressBar"
