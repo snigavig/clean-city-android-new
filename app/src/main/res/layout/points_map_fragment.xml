@@ -1,13 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:sothree="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/sliding_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginTop="@dimen/abc_action_bar_default_height_material"
-    android:orientation="vertical">
+    android:gravity="bottom"
+    sothree:umanoInitialState="hidden"
+    sothree:umanoPanelHeight="68dp"
+    sothree:umanoParalaxOffset="200dp"
+    sothree:umanoShadowHeight="4dp">
 
-    <com.google.android.gms.maps.MapView
-        android:id="@+id/map"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical">
 
-</FrameLayout>
+        <com.goodcodeforfun.cleancitybattery.view.ClickableMapView
+            android:id="@+id/map"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/contentDetails"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center|top" />
+
+</com.sothree.slidinguppanel.SlidingUpPanelLayout>

@@ -6,6 +6,7 @@ import android.content.res.Configuration;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -27,14 +28,17 @@ import com.activeandroid.query.Select;
 import com.goodcodeforfun.cleancitybattery.CleanCityApplication;
 import com.goodcodeforfun.cleancitybattery.R;
 import com.goodcodeforfun.cleancitybattery.event.LocationsUpdateEvent;
+import com.goodcodeforfun.cleancitybattery.fragment.LocationDetailsFragment;
 import com.goodcodeforfun.cleancitybattery.fragment.PointsListFragment;
 import com.goodcodeforfun.cleancitybattery.fragment.PointsMapFragment;
 import com.goodcodeforfun.cleancitybattery.model.Location;
 import com.goodcodeforfun.cleancitybattery.model.Type;
 import com.goodcodeforfun.cleancitybattery.network.ErrorHandler;
 import com.goodcodeforfun.cleancitybattery.network.NetworkService;
+import com.goodcodeforfun.cleancitybattery.view.ClickableMapView;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 
@@ -45,7 +49,7 @@ import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements
-        NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
+        NavigationView.OnNavigationItemSelectedListener, View.OnClickListener, ClickableMapView.UpdateMapAfterUserInterection {
 
     private static final long DRAWER_CLOSE_DELAY_MS = 250;
     private static final int COUNTER_GOAL = 7;
@@ -55,12 +59,14 @@ public class MainActivity extends AppCompatActivity implements
     private final Handler mDrawerActionHandler = new Handler();
     private final PointsMapFragment mPointsMapFragment = new PointsMapFragment();
     private final PointsListFragment mPointsListFragment = new PointsListFragment();
+    private final LocationDetailsFragment mLocationDetailsFragment = new LocationDetailsFragment();
     private HashMap<MenuItem, String> CUSTOM_TYPES = new HashMap<>();
     private int counter = 0;
     private DrawerLayout mDrawerLayout;
     private Toolbar mToolbar;
     private ProgressBar mProgressBar;
     private ActionBarDrawerToggle mDrawerToggle;
+    private FloatingActionButton mFloatingActionButton;
     private int mNavItemId;
     private LoaderManager mLoaderManager;
     private WeakReference<MainActivity> mainActivityWeakReference;
@@ -117,6 +123,10 @@ public class MainActivity extends AppCompatActivity implements
         return null;
     }
 
+    public FloatingActionButton getFloatingActionButton() {
+        return mFloatingActionButton;
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -148,7 +158,8 @@ public class MainActivity extends AppCompatActivity implements
                 responseReceiver,
                 statusIntentFilter);
 
-        findViewById(R.id.button_add_location).setOnClickListener(this);
+        mFloatingActionButton = (FloatingActionButton) findViewById(R.id.button_add_location);
+        mFloatingActionButton.setOnClickListener(this);
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
@@ -197,6 +208,12 @@ public class MainActivity extends AppCompatActivity implements
                 .beginTransaction()
                 .replace(R.id.contentList, mPointsListFragment).hide(mPointsListFragment)
                 .commit();
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.contentDetails, mLocationDetailsFragment)
+                .commit();
+
         navigate(mNavItemId);
 
         restartLocationsLoader();
@@ -386,6 +403,14 @@ public class MainActivity extends AppCompatActivity implements
     private void hideProgress() {
         if (null != mProgressBar)
             mProgressBar.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onUpdateMapAfterUserInterection() {
+        if (SlidingUpPanelLayout.PanelState.HIDDEN != mPointsMapFragment.getLayout().getPanelState()) {
+            mPointsMapFragment.getLayout().setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+            getFloatingActionButton().show();
+        }
     }
 
     public enum LocationType {

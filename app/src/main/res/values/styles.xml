@@ -8,5 +8,6 @@
         <item name="colorControlActivated">@color/primaryDark</item>
         <item name="colorControlHighlight">@color/secondaryDark</item>
         <item name="actionModeBackground">@color/secondaryDark</item>
+        <item name="android:windowActionBarOverlay">true</item>
     </style>
 </resources>

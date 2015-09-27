@@ -18,15 +18,17 @@ import android.view.ViewGroup;
 import com.goodcodeforfun.cleancitybattery.CleanCityApplication;
 import com.goodcodeforfun.cleancitybattery.R;
 import com.goodcodeforfun.cleancitybattery.activity.MainActivity;
+import com.goodcodeforfun.cleancitybattery.view.ClickableMapView;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -34,11 +36,16 @@ import java.util.ArrayList;
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
 
-public class PointsMapFragment extends Fragment implements OnMapReadyCallback {
+public class PointsMapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
     private static final int ZOOM = 13;
     private WeakReference<MainActivity> mainActivityWeakReference;
     private GoogleMap mGoogleMap;
-    private MapView mapView;
+    private ClickableMapView mapView;
+    private SlidingUpPanelLayout mLayout;
+
+    public SlidingUpPanelLayout getLayout() {
+        return mLayout;
+    }
 
     public void clearMap() {
         if (null != mGoogleMap)
@@ -100,7 +107,8 @@ public class PointsMapFragment extends Fragment implements OnMapReadyCallback {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.points_map_fragment, container, false);
         MapsInitializer.initialize(getActivity());
-        mapView = (MapView) v.findViewById(R.id.map);
+        mapView = (ClickableMapView) v.findViewById(R.id.map);
+        mLayout = (SlidingUpPanelLayout) v.findViewById(R.id.sliding_layout);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
         return v;
@@ -109,6 +117,7 @@ public class PointsMapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
         googleMap.setMyLocationEnabled(true);
+        googleMap.setOnMarkerClickListener(this);
         mGoogleMap = googleMap;
 
         Location lastLocation = SmartLocation.with(CleanCityApplication.getInstance()).location().getLastLocation();
@@ -168,5 +177,12 @@ public class PointsMapFragment extends Fragment implements OnMapReadyCallback {
         if (null != mapView)
             mapView.onSaveInstanceState(outState);
         super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        mLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+        mainActivityWeakReference.get().getFloatingActionButton().hide();
+        return false;
     }
 }
