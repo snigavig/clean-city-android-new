@@ -39,6 +39,7 @@ import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
 
 public class PointsMapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
+    public static final String MAP_VIEW_SAVE_STATE = "mapViewSaveState";
     private static final int ZOOM = 13;
     private WeakReference<MainActivity> mainActivityWeakReference;
     private GoogleMap mGoogleMap;
@@ -115,8 +116,9 @@ public class PointsMapFragment extends Fragment implements OnMapReadyCallback, G
         View v = inflater.inflate(R.layout.points_map_fragment, container, false);
         MapsInitializer.initialize(getActivity());
         mapView = (ClickableMapView) v.findViewById(R.id.map);
+        final Bundle mapViewSavedInstanceState = savedInstanceState != null ? savedInstanceState.getBundle(MAP_VIEW_SAVE_STATE) : null;
+        mapView.onCreate(mapViewSavedInstanceState);
         mLayout = (SlidingUpPanelLayout) v.findViewById(R.id.sliding_layout);
-        mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
         return v;
     }
@@ -181,8 +183,12 @@ public class PointsMapFragment extends Fragment implements OnMapReadyCallback, G
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        if (null != mapView)
+        if (null != mapView) {
             mapView.onSaveInstanceState(outState);
+            final Bundle mapViewSaveState = new Bundle(outState);
+            mapView.onSaveInstanceState(mapViewSaveState);
+            outState.putBundle(MAP_VIEW_SAVE_STATE, mapViewSaveState);
+        }
         super.onSaveInstanceState(outState);
     }
 
