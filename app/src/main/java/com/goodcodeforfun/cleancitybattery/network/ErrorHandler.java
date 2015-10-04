@@ -3,7 +3,6 @@ package com.goodcodeforfun.cleancitybattery.network;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
@@ -50,10 +49,7 @@ public class ErrorHandler {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            Snackbar
-                    .make(mParentView, intent.getStringExtra(NetworkService.EXTRA_RESPONCE_MESSAGE), Snackbar.LENGTH_LONG)
-                    .setAction("", null)
-                    .show(); // Don’t forget to show!
+            CleanCityApplication.getInstance().getSnackbarHelper().show(mParentView, intent.getStringExtra(NetworkService.EXTRA_RESPONCE_MESSAGE));
         }
     }
 }

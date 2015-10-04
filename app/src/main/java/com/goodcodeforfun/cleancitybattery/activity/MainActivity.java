@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements
 
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-            if (null != mPointsMapFragment && mPointsMapFragment.isVisible()) {
+            if (null != mPointsMapFragment) {
                 if (data.getCount() != 0) {
                     LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
                     ArrayList<LatLng> mArrayList = new ArrayList<>();
@@ -106,6 +106,8 @@ public class MainActivity extends AppCompatActivity implements
                     mPointsMapFragment.updateMap(mArrayList, boundsBuilder.build(), map);
                 } else {
                     mPointsMapFragment.clearMap();
+                    hideProgress();
+                    CleanCityApplication.getInstance().getSnackbarHelper().show(mPointsMapFragment.getView(), getString(R.string.no_points_warning));
                 }
             }
         }
@@ -125,6 +127,12 @@ public class MainActivity extends AppCompatActivity implements
         return null;
     }
 
+    public static <T> void initLoader(final int loaderId, final Bundle args, final LoaderManager.LoaderCallbacks<T> callbacks,
+                                      final LoaderManager loaderManager) {
+        loaderManager.restartLoader(loaderId, args, callbacks);
+        //need this to recreate it every damn time.
+    }
+
     public LocationDetailsFragment getLocationDetailsFragment() {
         return mLocationDetailsFragment;
     }
@@ -138,8 +146,6 @@ public class MainActivity extends AppCompatActivity implements
         super.onResume();
         restartLocationsLoader();
     }
-
-
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -222,7 +228,6 @@ public class MainActivity extends AppCompatActivity implements
 
         navigate(mNavItemId);
 
-        restartLocationsLoader();
         CleanCityApplication.getInstance().getEventBusHelper().getBus().register(this);
         ImageView avatar = (ImageView) findViewById(R.id.avatarImageView);
         Picasso.with(this).load(R.drawable.cat_default_avatar).into(avatar);
@@ -369,11 +374,6 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    public void restartLocationsLoader() {
-        if (null != mLoaderManager)
-            mLoaderManager.restartLoader(LOCATION_LOADER_ID, null, mLocationLoaderCallbacks);
-    }
-
     @Subscribe
     public void newLocationsUpdate(LocationsUpdateEvent event) {
         switch ((LocationsUpdateEvent.LocationUpdateEventType) event.getType()) {
@@ -418,6 +418,11 @@ public class MainActivity extends AppCompatActivity implements
             mPointsMapFragment.getGoogleMap().getUiSettings().setMapToolbarEnabled(false);
             getFloatingActionButton().show();
         }
+    }
+
+    public void restartLocationsLoader() {
+        if (null != mLoaderManager)
+            initLoader(LOCATION_LOADER_ID, null, mLocationLoaderCallbacks, mLoaderManager);
     }
 
     public enum LocationType {

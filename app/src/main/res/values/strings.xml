@@ -20,6 +20,7 @@
     <string name="add_location_button_text">ДОДАТИ ПУНКТ</string>
     <string name="avatar_content_description">аватар</string>
     <string name="title_activity_mini_games">MiniGamesActivity</string>
+    <string name="no_points_warning">Пробачте, нема пунктів прийому такого типу</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>

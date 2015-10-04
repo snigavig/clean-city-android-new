@@ -1,3 +1,4 @@
+
 package com.goodcodeforfun.cleancitybattery;
 
 import android.app.Application;
@@ -10,6 +11,7 @@ import com.goodcodeforfun.cleancitybattery.network.CleanCityApiService;
 import com.goodcodeforfun.cleancitybattery.network.NetworkService;
 import com.goodcodeforfun.cleancitybattery.util.EventBusHelper;
 import com.goodcodeforfun.cleancitybattery.util.SharedPreferencesHelper;
+import com.goodcodeforfun.cleancitybattery.util.SnackbarHelper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -27,6 +29,7 @@ public class CleanCityApplication extends Application {
     private static SharedPreferencesHelper mSharedPreferencesHelper;
     private static CleanCityApplication mInstance;
     private EventBusHelper mEventBusHelper;
+    private SnackbarHelper mSnackbarHelper;
     private CleanCityApiService networkService;
 
     public static CleanCityApplication getInstance() {
@@ -36,6 +39,11 @@ public class CleanCityApplication extends Application {
     public EventBusHelper getEventBusHelper() {
         return mEventBusHelper;
     }
+
+    public SnackbarHelper getSnackbarHelper() {
+        return mSnackbarHelper;
+    }
+
 
     public CleanCityApiService getNetworkService() {
         return networkService;
@@ -50,6 +58,7 @@ public class CleanCityApplication extends Application {
         super.onCreate();
         mSharedPreferencesHelper = new SharedPreferencesHelper(this);
         mEventBusHelper = new EventBusHelper();
+        mSnackbarHelper = new SnackbarHelper();
         mInstance = this;
         Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
         Retrofit retrofit = new Retrofit.Builder()
