@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.goodcodeforfun.cleancitybattery.CleanCityApplication;
+import com.goodcodeforfun.cleancitybattery.util.SnackbarHelper;
 import com.squareup.okhttp.ResponseBody;
 
 import java.io.IOException;
@@ -35,7 +36,7 @@ public class ErrorHandler {
         Intent localIntent =
                 new Intent(NetworkService.ACTION_BROADCAST)
                         .putExtra(NetworkService.EXTRA_RESPONCE_MESSAGE, message);
-        LocalBroadcastManager.getInstance(CleanCityApplication.getInstance()).sendBroadcast(localIntent);
+        LocalBroadcastManager.getInstance(CleanCityApplication.getContext()).sendBroadcast(localIntent);
     }
 
 
@@ -49,7 +50,7 @@ public class ErrorHandler {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            CleanCityApplication.getInstance().getSnackbarHelper().show(mParentView, intent.getStringExtra(NetworkService.EXTRA_RESPONCE_MESSAGE));
+            SnackbarHelper.show(mParentView, intent.getStringExtra(NetworkService.EXTRA_RESPONCE_MESSAGE));
         }
     }
 }

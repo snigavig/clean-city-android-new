@@ -84,11 +84,11 @@ public class ChooseLocationOnMapActivity extends AppCompatActivity implements Vi
     public void onMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
 
-        Location lastLocation = SmartLocation.with(CleanCityApplication.getInstance()).location().getLastLocation();
+        Location lastLocation = SmartLocation.with(CleanCityApplication.getContext()).location().getLastLocation();
         if (null != lastLocation) {
             moveMapCameraToPosition(lastLocation);
         } else {
-            SmartLocation.with(CleanCityApplication.getInstance()).location()
+            SmartLocation.with(CleanCityApplication.getContext()).location()
                 .oneFix()
                 .start(new OnLocationUpdatedListener() {
                     @Override

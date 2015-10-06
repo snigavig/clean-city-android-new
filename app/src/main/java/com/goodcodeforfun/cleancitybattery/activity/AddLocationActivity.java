@@ -63,7 +63,7 @@ public class AddLocationActivity extends AppCompatActivity implements View.OnCli
 
                 if (event.getAction() == MotionEvent.ACTION_UP) {
                     if (event.getRawX() >= (editTextAddress.getRight() - editTextAddress.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
-                        Intent intent = new Intent(CleanCityApplication.getInstance(), ChooseLocationOnMapActivity.class);
+                        Intent intent = new Intent(CleanCityApplication.getContext(), ChooseLocationOnMapActivity.class);
                         startActivityForResult(intent, CHOOSE_ON_MAP_REQUEST);
                         return true;
                     }
@@ -141,7 +141,7 @@ public class AddLocationActivity extends AppCompatActivity implements View.OnCli
                 targetLocation.setLatitude(lat);
                 targetLocation.setLongitude(lng);
 
-                SmartLocation.with(CleanCityApplication.getInstance()).geocoding()
+                SmartLocation.with(CleanCityApplication.getContext()).geocoding()
                         .reverse(targetLocation, new OnReverseGeocodingListener() {
                             @Override
                             public void onAddressResolved(android.location.Location location, List<Address> list) {

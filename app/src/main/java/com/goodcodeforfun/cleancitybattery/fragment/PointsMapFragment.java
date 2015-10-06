@@ -42,6 +42,32 @@ public class PointsMapFragment extends Fragment implements OnMapReadyCallback, G
     public static final String MAP_VIEW_SAVE_STATE = "mapViewSaveState";
     private static final int ZOOM = 13;
     private WeakReference<MainActivity> mainActivityWeakReference;
+    private final SlidingUpPanelLayout.PanelSlideListener slideListener = new SlidingUpPanelLayout.PanelSlideListener() {
+        @Override
+        public void onPanelSlide(View panel, float slideOffset) {
+            mainActivityWeakReference.get().getLocationDetailsFragment().getArrow().setRotation(180 * slideOffset);
+        }
+
+
+        @Override
+        public void onPanelExpanded(View panel) {
+        }
+
+
+        @Override
+        public void onPanelCollapsed(View panel) {
+        }
+
+
+        @Override
+        public void onPanelAnchored(View panel) {
+        }
+
+
+        @Override
+        public void onPanelHidden(View panel) {
+        }
+    };
     private GoogleMap mGoogleMap;
     private ClickableMapView mapView;
     private SlidingUpPanelLayout mLayout;
@@ -66,7 +92,7 @@ public class PointsMapFragment extends Fragment implements OnMapReadyCallback, G
             int px = getResources().getDimensionPixelSize(R.dimen.map_marker_size);
             Bitmap markerBitmap = Bitmap.createBitmap(px, px, Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(markerBitmap);
-            Drawable shape = ContextCompat.getDrawable(CleanCityApplication.getInstance(), R.drawable.ic_place_24dp);
+            Drawable shape = ContextCompat.getDrawable(CleanCityApplication.getContext(), R.drawable.ic_place_24dp);
             if (shape != null) {
                 shape.setBounds(0, 0, markerBitmap.getWidth(), markerBitmap.getHeight());
                 shape.draw(canvas);
@@ -119,6 +145,7 @@ public class PointsMapFragment extends Fragment implements OnMapReadyCallback, G
         final Bundle mapViewSavedInstanceState = savedInstanceState != null ? savedInstanceState.getBundle(MAP_VIEW_SAVE_STATE) : null;
         mapView.onCreate(mapViewSavedInstanceState);
         mLayout = (SlidingUpPanelLayout) v.findViewById(R.id.sliding_layout);
+        mLayout.setPanelSlideListener(slideListener);
         mapView.getMapAsync(this);
         return v;
     }
@@ -129,11 +156,11 @@ public class PointsMapFragment extends Fragment implements OnMapReadyCallback, G
         googleMap.setOnMarkerClickListener(this);
         mGoogleMap = googleMap;
 
-        Location lastLocation = SmartLocation.with(CleanCityApplication.getInstance()).location().getLastLocation();
+        Location lastLocation = SmartLocation.with(mainActivityWeakReference.get()).location().getLastLocation();
         if (null != lastLocation) {
             moveMapCameraToPosition(lastLocation);
         } else {
-            SmartLocation.with(CleanCityApplication.getInstance()).location()
+            SmartLocation.with(CleanCityApplication.getContext()).location()
                     .oneFix()
                     .start(new OnLocationUpdatedListener() {
                         @Override
@@ -142,14 +169,14 @@ public class PointsMapFragment extends Fragment implements OnMapReadyCallback, G
                         }
                     });
         }
-        mainActivityWeakReference.get().restartLocationsLoader();
+        //mainActivityWeakReference.get().restartLocationsLoader();
     }
 
     private void moveMapCameraToPosition(android.location.Location location) {
         LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
         if (null != mGoogleMap) {
             mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(position, ZOOM));
-            SmartLocation.with(CleanCityApplication.getInstance()).location().stop();
+            SmartLocation.with(mainActivityWeakReference.get()).location().stop();
         }
     }
 

@@ -31,7 +31,7 @@
         android:required="true" />
 
     <application
-        android:name=".CleanCityApplication"
+        android:name="CleanCityApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -48,20 +48,25 @@
             android:value="cleancity.db" />
         <meta-data
             android:name="AA_DB_VERSION"
-            android:value="2" />
+            android:value="3" />
+        <meta-data
+            android:name="AA_SERIALIZERS"
+            android:value="com.goodcodeforfun.cleancitybattery.utils.StringArraySerializer" />
         <meta-data
             android:name="AA_MODELS"
             android:value="com.goodcodeforfun.cleancitybattery.model.Location,
-                com.goodcodeforfun.cleancitybattery.model.Type" />
+            com.goodcodeforfun.cleancitybattery.model.Type" />
 
-        <activity
-            android:name=".activity.MainActivity"
-            android:label="@string/app_name" >
+        <activity android:name=".activity.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".activity.MainActivity"
+            android:label="@string/app_name">
         </activity>
         <activity
             android:name=".activity.AddLocationActivity"

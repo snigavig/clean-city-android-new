@@ -1,5 +1,6 @@
 package com.goodcodeforfun.cleancitybattery.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
@@ -35,6 +36,8 @@ import com.goodcodeforfun.cleancitybattery.model.Location;
 import com.goodcodeforfun.cleancitybattery.model.Type;
 import com.goodcodeforfun.cleancitybattery.network.ErrorHandler;
 import com.goodcodeforfun.cleancitybattery.network.NetworkService;
+import com.goodcodeforfun.cleancitybattery.util.EventBusHelper;
+import com.goodcodeforfun.cleancitybattery.util.SnackbarHelper;
 import com.goodcodeforfun.cleancitybattery.view.ClickableMapView;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -67,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements
     private ProgressBar mProgressBar;
     private ActionBarDrawerToggle mDrawerToggle;
     private FloatingActionButton mFloatingActionButton;
+    private Menu mMenu;
     private int mNavItemId;
     private LoaderManager mLoaderManager;
     private WeakReference<MainActivity> mainActivityWeakReference;
@@ -107,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements
                 } else {
                     mPointsMapFragment.clearMap();
                     hideProgress();
-                    CleanCityApplication.getInstance().getSnackbarHelper().show(mPointsMapFragment.getView(), getString(R.string.no_points_warning));
+                    SnackbarHelper.show(mPointsMapFragment.getView(), getString(R.string.no_points_warning));
                 }
             }
         }
@@ -120,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements
 
     public static LocationType findByAbbr(String abbr) {
         for (LocationType v : LocationType.values()) {
-            if (v.toString().equals(abbr)) {
+            if (v.toResourceString(CleanCityApplication.getContext()).equals(abbr)) {
                 return v;
             }
         }
@@ -144,7 +148,15 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-        restartLocationsLoader();
+        if (!EventBusHelper.isRegistered())
+            EventBusHelper.register(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (EventBusHelper.isRegistered())
+            EventBusHelper.unregister(this);
     }
 
     @Override
@@ -188,20 +200,7 @@ public class MainActivity extends AppCompatActivity implements
         // listen for navigation events
         NavigationView navigationView = (NavigationView) findViewById(R.id.navigation);
         navigationView.setNavigationItemSelectedListener(this);
-        Menu mMenu = navigationView.getMenu();
-
-        List<Type> customTypes = new Select().from(Type.class).execute();
-
-        for (Type type : customTypes) {
-            final String name = type.getName();
-            final String typeValue = type.getValue();
-            int newId = mMenu.size();
-            MenuItem item = mMenu.add(R.id.default_group, newId, Menu.NONE, name);
-            item.setCheckable(true);
-            item.setIcon(R.drawable.ic_cycle_24dp);
-            if (!CUSTOM_TYPES.containsKey(item))
-                CUSTOM_TYPES.put(item, typeValue);
-        }
+        mMenu = navigationView.getMenu();
 
         // select the correct nav menu item
         if (null != mMenu) {
@@ -228,7 +227,6 @@ public class MainActivity extends AppCompatActivity implements
 
         navigate(mNavItemId);
 
-        CleanCityApplication.getInstance().getEventBusHelper().getBus().register(this);
         ImageView avatar = (ImageView) findViewById(R.id.avatarImageView);
         Picasso.with(this).load(R.drawable.cat_default_avatar).into(avatar);
         avatar.setOnClickListener(new View.OnClickListener() {
@@ -243,6 +241,10 @@ public class MainActivity extends AppCompatActivity implements
                 }
             }
         });
+
+        //TODO: Move to scheduler
+        NetworkService.startActionGetListTypes(this);
+        NetworkService.startActionGetListLocations(this);
     }
 
     private void setDrawerIndicator() {
@@ -420,26 +422,46 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        List<Type> customTypes = new Select().from(Type.class).execute();
+
+        for (Type type : customTypes) {
+            final String name = type.getName();
+            final String typeValue = type.getValue();
+            int newId = mMenu.size();
+            MenuItem item = mMenu.add(R.id.default_group, newId, Menu.NONE, name);
+            item.setCheckable(true);
+            item.setIcon(R.drawable.ic_cycle_24dp);
+            if (!CUSTOM_TYPES.containsKey(item))
+                CUSTOM_TYPES.put(item, typeValue);
+        }
+        return super.onCreateOptionsMenu(menu);
+    }
+
     public void restartLocationsLoader() {
         if (null != mLoaderManager)
             initLoader(LOCATION_LOADER_ID, null, mLocationLoaderCallbacks, mLoaderManager);
     }
 
     public enum LocationType {
-        battery(CleanCityApplication.getInstance().getString(R.string.item_1)),
-        glass(CleanCityApplication.getInstance().getString(R.string.item_2)),
-        paper(CleanCityApplication.getInstance().getString(R.string.item_3)),
-        plastic(CleanCityApplication.getInstance().getString(R.string.item_4));
+        battery(R.string.item_1),
+        glass(R.string.item_2),
+        paper(R.string.item_3),
+        plastic(R.string.item_4);
 
-        private final String readableName;
+        private int resId;
 
-        LocationType(String readableName) {
-            this.readableName = readableName;
+        LocationType(int resId) {
+            this.resId = resId;
         }
 
-        @Override
-        public String toString() {
-            return readableName;
+        public String toResourceString(Context ctx) {
+            return resource(ctx);
+        }
+
+        public String resource(Context ctx) {
+            return ctx.getString(resId);
         }
     }
 }

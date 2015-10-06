@@ -10,14 +10,13 @@ import com.google.gson.annotations.SerializedName;
 
 @Table(name = "Locations", id = BaseColumns._ID)
 public class Location extends Model {
-
     public static final String COLUMN_NAME = "Name";
     public static final String COLUMN_LATITUDE = "Latitude";
     public static final String COLUMN_LONGTITUDE = "Longtitude";
     public static final String COLUMN_TYPE = "Type";
     public static final String COLUMN_API_ID = "ApiId";
     public static final String COLUMN_ADDRESS = "Address";
-
+    public static final String COLUMN_PHOTOS = "Photos";
     @SerializedName("_id")
     @Expose
     @Column(name = COLUMN_API_ID, unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
@@ -44,7 +43,32 @@ public class Location extends Model {
     @Expose
     @Column(name = COLUMN_ADDRESS)
     private String address;
+    @Expose
+    @Column(name = COLUMN_PHOTOS)
+    private String[] photos;
 
+    public Location() {
+        super();
+    }
+
+    /**
+     * @return The photos
+     */
+    public String[] getPhotos() {
+        return photos;
+    }
+
+    /**
+     * @param photos The photos
+     */
+    public void setPhotos(String[] photos) {
+        this.photos = photos;
+    }
+
+    public Location withPhotos(String[] photos) {
+        this.photos = photos;
+        return this;
+    }
 
     /**
      * @return The address

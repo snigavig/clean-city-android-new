@@ -14,6 +14,7 @@ import com.goodcodeforfun.cleancitybattery.event.LocationsUpdateEvent;
 import com.goodcodeforfun.cleancitybattery.model.Location;
 import com.goodcodeforfun.cleancitybattery.model.Type;
 import com.goodcodeforfun.cleancitybattery.util.DeviceStateHelper;
+import com.goodcodeforfun.cleancitybattery.util.EventBusHelper;
 
 import java.io.IOException;
 import java.util.List;
@@ -66,7 +67,7 @@ public class NetworkService extends IntentService {
 
     public static boolean contains(String test) {
         for (MainActivity.LocationType c : MainActivity.LocationType.values()) {
-            if (c.name().equals(test)) {
+            if (c.resource(CleanCityApplication.getContext()).equals(test)) {
                 return true;
             }
         }
@@ -133,9 +134,7 @@ public class NetworkService extends IntentService {
     }
 
     private void handleActionGetListLocations() {
-        CleanCityApplication
-                .getInstance()
-                .getEventBusHelper()
+        EventBusHelper
                 .getBus()
                 .post(
                         new LocationsUpdateEvent(
@@ -166,9 +165,7 @@ public class NetworkService extends IntentService {
                     ActiveAndroid.setTransactionSuccessful();
                 } finally {
                     ActiveAndroid.endTransaction();
-                    CleanCityApplication
-                            .getInstance()
-                            .getEventBusHelper()
+                    EventBusHelper
                             .getBus()
                             .post(
                                     new LocationsUpdateEvent(
@@ -208,7 +205,7 @@ public class NetworkService extends IntentService {
                     if (locationsResponse.isSuccess()) {
                         locationsResponse.body().save();
                         Toast.makeText(
-                                CleanCityApplication.getInstance(),
+                                CleanCityApplication.getContext(),
                                 "Location successfully added",
                                 Toast.LENGTH_SHORT
                         ).show();
@@ -220,7 +217,7 @@ public class NetworkService extends IntentService {
                                         locationsResponse.code()
                                 );
                         Toast.makeText(
-                                CleanCityApplication.getInstance(),
+                                CleanCityApplication.getContext(),
                                 "Location not added, please try again",
                                 Toast.LENGTH_SHORT
                         ).show();

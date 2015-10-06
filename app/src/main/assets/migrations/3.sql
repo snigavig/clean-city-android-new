@@ -1,0 +1,1 @@
+ALTER TABLE Locations ADD Photos TEXT;

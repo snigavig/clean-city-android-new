@@ -1,9 +1,11 @@
 package com.goodcodeforfun.cleancitybattery.util;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.util.DisplayMetrics;
 import android.util.Log;
 
 import com.goodcodeforfun.cleancitybattery.CleanCityApplication;
@@ -21,6 +23,12 @@ public class DeviceStateHelper {
 
     private static final int RESPONSE_OK = 200;
     private static final int CONNECT_TIMEOUT = 1500;
+
+    public static int convertDpToPixel(float dp) {
+        DisplayMetrics metrics = Resources.getSystem().getDisplayMetrics();
+        float px = dp * (metrics.densityDpi / 160f);
+        return Math.round(px);
+    }
 
     private static Boolean isNetworkInterfaceConnected() {
         ConnectivityManager connectivityManager

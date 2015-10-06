@@ -9,11 +9,9 @@ import com.google.gson.annotations.Expose;
 
 @Table(name = "Types", id = BaseColumns._ID)
 public class Type extends Model {
-
     public static final String COLUMN_NAME = "Name";
     public static final String COLUMN_CREATED = "Created";
     public static final String COLUMN_TYPE_VALUE = "TypeValue";
-
     @Expose
     @Column(name = COLUMN_CREATED)
     private String created;
@@ -23,6 +21,10 @@ public class Type extends Model {
     @Expose
     @Column(name = COLUMN_NAME, unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
     private String name;
+
+    public Type() {
+        super();
+    }
 
     /**
      * @return The created

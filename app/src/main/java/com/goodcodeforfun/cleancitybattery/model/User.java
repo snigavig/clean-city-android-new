@@ -6,12 +6,15 @@ import com.google.gson.annotations.SerializedName;
 //Not used and most probably will never be needed
 @Deprecated
 public class User {
-
     @SerializedName("_id")
     @Expose
     private String apiId;
     @Expose
     private String displayName;
+
+    public User() {
+        super();
+    }
 
     /**
      * @return The Id

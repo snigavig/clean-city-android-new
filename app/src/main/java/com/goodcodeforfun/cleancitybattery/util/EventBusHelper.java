@@ -1,5 +1,6 @@
 package com.goodcodeforfun.cleancitybattery.util;
 
+import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 
@@ -10,17 +11,38 @@ import com.squareup.otto.ThreadEnforcer;
  * Created by snigavig on 27.09.15.
  */
 public class EventBusHelper {
-    private MainThreadEventBus mBus;
+    private static MainThreadEventBus mBus;
+
+    private static boolean isRegistered;
 
     public EventBusHelper() {
-        mBus = new MainThreadEventBus(ThreadEnforcer.MAIN);
     }
 
-    public MainThreadEventBus getBus() {
+    public static void setIsRegistered(final boolean registered) {
+        isRegistered = registered;
+    }
+
+    public static boolean isRegistered() {
+        return isRegistered;
+    }
+
+    public static void register(Context context) {
+        getBus().register(context);
+        setIsRegistered(true);
+    }
+
+    public static void unregister(Context context) {
+        getBus().unregister(context);
+        setIsRegistered(false);
+    }
+
+    public static MainThreadEventBus getBus() {
+        if (null == mBus)
+            mBus = new MainThreadEventBus(ThreadEnforcer.MAIN);
         return mBus;
     }
 
-    public class MainThreadEventBus extends Bus {
+    public static class MainThreadEventBus extends Bus {
 
         private final Handler mHandler = new Handler(Looper.getMainLooper());
 

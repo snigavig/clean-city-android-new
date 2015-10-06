@@ -68,6 +68,9 @@
 -keepattributes Column
 -keepattributes Table
 -keepclasseswithmembers class * { @com.activeandroid.annotation.Column <fields>; }
+-keepclassmembers class * {
+    private <fields>;
+}
 
 #stuff
 -dontwarn org.apache.http.**
