@@ -15,6 +15,7 @@ import com.goodcodeforfun.cleancitybattery.model.Location;
 import com.goodcodeforfun.cleancitybattery.model.Type;
 import com.goodcodeforfun.cleancitybattery.util.DeviceStateHelper;
 import com.goodcodeforfun.cleancitybattery.util.EventBusHelper;
+import com.squareup.otto.Produce;
 
 import java.io.IOException;
 import java.util.List;
@@ -39,6 +40,7 @@ public class NetworkService extends IntentService {
             "com.goodcodeforfun.cleancitybattery.network.extra.LOCATION_DB_ID";
     public static final String EXTRA_RESPONCE_MESSAGE =
             "com.goodcodeforfun.cleancitybattery.network.MESSAGE";
+    LocationsUpdateEvent lastUpdate;
 
     public NetworkService() {
         super("NetworkService");
@@ -67,7 +69,7 @@ public class NetworkService extends IntentService {
 
     public static boolean contains(String test) {
         for (MainActivity.LocationType c : MainActivity.LocationType.values()) {
-            if (c.resource(CleanCityApplication.getContext()).equals(test)) {
+            if (c.name().equals(test)) {
                 return true;
             }
         }
@@ -165,12 +167,13 @@ public class NetworkService extends IntentService {
                     ActiveAndroid.setTransactionSuccessful();
                 } finally {
                     ActiveAndroid.endTransaction();
+                    lastUpdate = new LocationsUpdateEvent(
+                            LocationsUpdateEvent.LocationUpdateEventType.COMPLETED,
+                            LocationsUpdateEvent.OK_RESULT_CODE);
                     EventBusHelper
                             .getBus()
                             .post(
-                                    new LocationsUpdateEvent(
-                                            LocationsUpdateEvent.LocationUpdateEventType.COMPLETED,
-                                            LocationsUpdateEvent.OK_RESULT_CODE)
+                                    lastUpdate
                             );
                 }
             } else {
@@ -228,4 +231,12 @@ public class NetworkService extends IntentService {
             }
         }
     }
+
+    @Produce
+    public LocationsUpdateEvent produceLocationUpdate() {
+        if (null != lastUpdate)
+            return new LocationsUpdateEvent(this.lastUpdate);
+        return null;
+    }
+
 }

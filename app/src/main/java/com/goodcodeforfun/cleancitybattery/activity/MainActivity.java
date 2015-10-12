@@ -92,26 +92,28 @@ public class MainActivity extends AppCompatActivity implements
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
             if (null != mPointsMapFragment) {
-                if (data.getCount() != 0) {
-                    LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
-                    ArrayList<LatLng> mArrayList = new ArrayList<>();
-                    HashMap<String, LatLng> map = new HashMap<>();
-                    LatLng position;
-                    for (data.moveToFirst(); !data.isAfterLast(); data.moveToNext()) {
-                        position = new LatLng(
-                                data.getDouble(data.getColumnIndex(Location.COLUMN_LATITUDE)),
-                                data.getDouble(data.getColumnIndex(Location.COLUMN_LONGTITUDE))
-                        );
-                        boundsBuilder.include(position);
-                        mArrayList.add(position);
-                        map.put(data.getString(data.getColumnIndexOrThrow(Location.COLUMN_API_ID)), position);
+                if (null != data) {
+                    if (data.getCount() != 0) {
+                        LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
+                        ArrayList<LatLng> mArrayList = new ArrayList<>();
+                        HashMap<String, LatLng> map = new HashMap<>();
+                        LatLng position;
+                        for (data.moveToFirst(); !data.isAfterLast(); data.moveToNext()) {
+                            position = new LatLng(
+                                    data.getDouble(data.getColumnIndex(Location.COLUMN_LATITUDE)),
+                                    data.getDouble(data.getColumnIndex(Location.COLUMN_LONGTITUDE))
+                            );
+                            boundsBuilder.include(position);
+                            mArrayList.add(position);
+                            map.put(data.getString(data.getColumnIndexOrThrow(Location.COLUMN_API_ID)), position);
+                        }
+                        hideProgress();
+                        mPointsMapFragment.updateMap(mArrayList, boundsBuilder.build(), map);
+                    } else {
+                        mPointsMapFragment.clearMap();
+                        hideProgress();
+                        SnackbarHelper.show(mPointsMapFragment.getView(), getString(R.string.no_points_warning));
                     }
-                    hideProgress();
-                    mPointsMapFragment.updateMap(mArrayList, boundsBuilder.build(), map);
-                } else {
-                    mPointsMapFragment.clearMap();
-                    hideProgress();
-                    SnackbarHelper.show(mPointsMapFragment.getView(), getString(R.string.no_points_warning));
                 }
             }
         }
@@ -124,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements
 
     public static LocationType findByAbbr(String abbr) {
         for (LocationType v : LocationType.values()) {
-            if (v.toResourceString(CleanCityApplication.getContext()).equals(abbr)) {
+            if (v.toResourceString(CleanCityApplication.getInstance()).equals(abbr)) {
                 return v;
             }
         }
@@ -146,17 +148,15 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        if (!EventBusHelper.isRegistered())
-            EventBusHelper.register(this);
+    protected void onStart() {
+        super.onStart();
+        EventBusHelper.register(this);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        if (EventBusHelper.isRegistered())
-            EventBusHelper.unregister(this);
+        EventBusHelper.unregister(this);
     }
 
     @Override
@@ -241,10 +241,6 @@ public class MainActivity extends AppCompatActivity implements
                 }
             }
         });
-
-        //TODO: Move to scheduler
-        NetworkService.startActionGetListTypes(this);
-        NetworkService.startActionGetListLocations(this);
     }
 
     private void setDrawerIndicator() {
@@ -425,16 +421,16 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         List<Type> customTypes = new Select().from(Type.class).execute();
-
         for (Type type : customTypes) {
-            final String name = type.getName();
             final String typeValue = type.getValue();
-            int newId = mMenu.size();
-            MenuItem item = mMenu.add(R.id.default_group, newId, Menu.NONE, name);
-            item.setCheckable(true);
-            item.setIcon(R.drawable.ic_cycle_24dp);
-            if (!CUSTOM_TYPES.containsKey(item))
+            if (!CUSTOM_TYPES.containsValue(typeValue)) {
+                final String name = type.getName();
+                int newId = mMenu.size();
+                MenuItem item = mMenu.add(R.id.default_group, newId, Menu.NONE, name);
+                item.setCheckable(true);
+                item.setIcon(R.drawable.ic_cycle_24dp);
                 CUSTOM_TYPES.put(item, typeValue);
+            }
         }
         return super.onCreateOptionsMenu(menu);
     }

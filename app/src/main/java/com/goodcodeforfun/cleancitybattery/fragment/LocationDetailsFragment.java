@@ -59,7 +59,7 @@ public class LocationDetailsFragment extends Fragment {
                     if (null != name)
                         mNameView.setText(name);
                 }
-                String photoUrls = data.getString(data.getColumnIndex(Location.COLUMN_PHOTOS));
+                String photoUrls = (data.getColumnIndex(Location.COLUMN_PHOTOS) != -1) ? data.getString(data.getColumnIndex(Location.COLUMN_PHOTOS)) : null;
                 if (null != photoUrls) {
                     for (String photoUrl : photoUrls.split(",")) {
                         CleanCityApplication.getInstance().getPicasso().load(photoUrl).into(new Target() {

@@ -9,6 +9,11 @@ public class ApplicationLoadedEvent extends AbstractEvent {
     public static final int NO_CODE = -1;
     private int _resultCode;
 
+    public ApplicationLoadedEvent(ApplicationLoadedEvent event) {
+        super(event.getType());
+        this._resultCode = event.getResultCode();
+    }
+
     public ApplicationLoadedEvent(ApplicationLoadedType type, int resultCode) {
         super(type);
         this._resultCode = resultCode;

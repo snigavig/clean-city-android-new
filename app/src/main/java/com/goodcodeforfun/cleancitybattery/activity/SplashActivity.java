@@ -18,12 +18,16 @@ public class SplashActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        CleanCityApplication app = CleanCityApplication.getInstance();
-        if (null != app && app.isInitialised())
+        CleanCityApplication app;
+        app = CleanCityApplication.getInstance();
+        if (null != app && app.isInitialised()) {
             startMainActivity();
+        } else {
+            app = new CleanCityApplication(getBaseContext());
+            app.onCreate();
+        }
         super.onCreate(savedInstanceState);
-        if (!EventBusHelper.isRegistered())
-            EventBusHelper.register(this);
+        EventBusHelper.register(this);
         setContentView(R.layout.activity_splash);
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
     }
@@ -31,13 +35,11 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (EventBusHelper.isRegistered())
-            EventBusHelper.unregister(this);
+        EventBusHelper.unregister(this);
     }
 
     @Subscribe
     public void newApplicationLoadedUpdate(ApplicationLoadedEvent event) {
-
         switch ((ApplicationLoadedEvent.ApplicationLoadedType) event.getType()) {
             case STARTED:
                 showProgress();

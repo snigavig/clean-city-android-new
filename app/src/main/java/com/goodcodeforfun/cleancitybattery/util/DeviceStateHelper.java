@@ -32,7 +32,7 @@ public class DeviceStateHelper {
 
     private static Boolean isNetworkInterfaceConnected() {
         ConnectivityManager connectivityManager
-                = (ConnectivityManager) CleanCityApplication.getInstance().getSystemService(Context.CONNECTIVITY_SERVICE);
+                = (ConnectivityManager) CleanCityApplication.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
     }

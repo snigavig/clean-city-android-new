@@ -13,27 +13,15 @@ import com.squareup.otto.ThreadEnforcer;
 public class EventBusHelper {
     private static MainThreadEventBus mBus;
 
-    private static boolean isRegistered;
-
     public EventBusHelper() {
-    }
-
-    public static void setIsRegistered(final boolean registered) {
-        isRegistered = registered;
-    }
-
-    public static boolean isRegistered() {
-        return isRegistered;
     }
 
     public static void register(Context context) {
         getBus().register(context);
-        setIsRegistered(true);
     }
 
     public static void unregister(Context context) {
         getBus().unregister(context);
-        setIsRegistered(false);
     }
 
     public static MainThreadEventBus getBus() {

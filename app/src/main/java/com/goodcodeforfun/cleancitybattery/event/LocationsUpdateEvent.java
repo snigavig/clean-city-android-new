@@ -9,6 +9,11 @@ public class LocationsUpdateEvent extends AbstractEvent {
     public static final int NO_CODE = -1;
     private int _resultCode;
 
+    public LocationsUpdateEvent(LocationsUpdateEvent event) {
+        super(event.getType());
+        this._resultCode = event.getResultCode();
+    }
+
     public LocationsUpdateEvent(LocationUpdateEventType type, int resultCode) {
         super(type);
         this._resultCode = resultCode;
