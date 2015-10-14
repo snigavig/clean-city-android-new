@@ -121,7 +121,7 @@ public class LocationDetailsFragment extends Fragment {
         restartLocationLoader();
     }
 
-    public void restartLocationLoader() {
+    private void restartLocationLoader() {
         if (null != mLoaderManager)
             mLoaderManager.restartLoader(LOCATION_LOADER_ID, null, mLocationLoaderCallbacks);
     }

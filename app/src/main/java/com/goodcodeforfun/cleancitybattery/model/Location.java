@@ -16,10 +16,10 @@ public class Location extends Model {
     public static final String COLUMN_NAME = "Name";
     public static final String COLUMN_LATITUDE = "Latitude";
     public static final String COLUMN_LONGTITUDE = "Longtitude";
-    public static final String COLUMN_TYPE = "Type";
     public static final String COLUMN_API_ID = "ApiId";
-    public static final String COLUMN_ADDRESS = "Address";
     public static final String COLUMN_PHOTOS = "Photos";
+    private static final String COLUMN_TYPE = "Type";
+    private static final String COLUMN_ADDRESS = "Address";
     @SerializedName("_id")
     @Expose
     @Column(name = COLUMN_API_ID, unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
@@ -49,7 +49,7 @@ public class Location extends Model {
     @Column(name = COLUMN_PHOTOS)
     @SerializedName("photos")
     @Expose
-    private List<String> photos = new ArrayList<String>();
+    private List<String> photos = new ArrayList<>();
 
     public Location() {
         super();

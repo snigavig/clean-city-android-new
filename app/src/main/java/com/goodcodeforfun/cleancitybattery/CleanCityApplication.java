@@ -32,7 +32,6 @@ public class CleanCityApplication extends Application {
     private static final int PORT = 3000;
     public static final String FULL_URL = BASE_URL + ":" + PORT;
     private static SharedPreferencesHelper mSharedPreferencesHelper;
-    private static EventBusHelper mEventBusHelper;
     private static CleanCityApplication mInstance;
     private static Context mContext;
     private static Picasso mPicasso;
@@ -51,15 +50,11 @@ public class CleanCityApplication extends Application {
     }
 
     public static CleanCityApplication getInstance() {
-        return (CleanCityApplication) mInstance;
+        return mInstance;
     }
 
     public static Context getContext() {
         return mContext;
-    }
-
-    public static EventBusHelper getEventBusHelper() {
-        return mEventBusHelper;
     }
 
     public CleanCityApiService getNetworkService() {
@@ -93,7 +88,6 @@ public class CleanCityApplication extends Application {
         super.onCreate();
         EventBusHelper.register(this);
         mInstance = this;
-        mEventBusHelper = new EventBusHelper();
         Configuration.Builder configurationBuilder = new Configuration.Builder(getContext().getApplicationContext());
         configurationBuilder.addModelClass(Location.class);
         configurationBuilder.addModelClass(Type.class);

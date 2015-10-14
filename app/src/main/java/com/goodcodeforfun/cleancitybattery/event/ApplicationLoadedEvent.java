@@ -7,7 +7,7 @@ public class ApplicationLoadedEvent extends AbstractEvent {
     public static final int OK_RESULT_CODE = 0;
     public static final int FAIL_RESULT_CODE = 1;
     public static final int NO_CODE = -1;
-    private int _resultCode;
+    private final int _resultCode;
 
     public ApplicationLoadedEvent(ApplicationLoadedEvent event) {
         super(event.getType());

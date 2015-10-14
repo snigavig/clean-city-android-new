@@ -11,6 +11,7 @@ import com.google.android.gms.maps.MapView;
  * Created by snigavig on 27.09.15.
  */
 public class ClickableMapView extends MapView {
+    private static final String EXCEPTION_DESCRIPTION = " must implement UpdateMapAfterUserInterection";
     private UpdateMapAfterUserInterection updateMapAfterUserInterection;
 
     public ClickableMapView(Context context) {
@@ -18,7 +19,7 @@ public class ClickableMapView extends MapView {
         try {
             updateMapAfterUserInterection = (UpdateMapAfterUserInterection) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement UpdateMapAfterUserInterection");
+            throw new ClassCastException(context.toString() + EXCEPTION_DESCRIPTION);
         }
     }
 
@@ -27,7 +28,7 @@ public class ClickableMapView extends MapView {
         try {
             updateMapAfterUserInterection = (UpdateMapAfterUserInterection) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement UpdateMapAfterUserInterection");
+            throw new ClassCastException(context.toString() + EXCEPTION_DESCRIPTION);
         }
     }
 
@@ -36,7 +37,7 @@ public class ClickableMapView extends MapView {
         try {
             updateMapAfterUserInterection = (UpdateMapAfterUserInterection) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement UpdateMapAfterUserInterection");
+            throw new ClassCastException(context.toString() + EXCEPTION_DESCRIPTION);
         }
     }
 
@@ -45,7 +46,7 @@ public class ClickableMapView extends MapView {
         try {
             updateMapAfterUserInterection = (UpdateMapAfterUserInterection) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement UpdateMapAfterUserInterection");
+            throw new ClassCastException(context.toString() + EXCEPTION_DESCRIPTION);
         }
     }
 

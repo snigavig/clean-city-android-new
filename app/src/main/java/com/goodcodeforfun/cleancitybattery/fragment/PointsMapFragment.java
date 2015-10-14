@@ -25,13 +25,11 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,7 +37,7 @@ import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
 
 public class PointsMapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
-    public static final String MAP_VIEW_SAVE_STATE = "mapViewSaveState";
+    private static final String MAP_VIEW_SAVE_STATE = "mapViewSaveState";
     private static final int ZOOM = 13;
     private WeakReference<MainActivity> mainActivityWeakReference;
     private final SlidingUpPanelLayout.PanelSlideListener slideListener = new SlidingUpPanelLayout.PanelSlideListener() {
@@ -85,7 +83,7 @@ public class PointsMapFragment extends Fragment implements OnMapReadyCallback, G
             mGoogleMap.clear();
     }
 
-    public void updateMap(ArrayList<LatLng> points, LatLngBounds bounds, HashMap<String, LatLng> map) {
+    public void updateMap(HashMap<String, LatLng> map) {
         if (null != mGoogleMap) {
             mGoogleMap.clear();
 

@@ -28,10 +28,6 @@ import retrofit.Response;
  * a service on a separate handler thread.
  */
 public class NetworkService extends IntentService {
-    public static final String ACTION_GET_LIST_LOCATIONS =
-            "com.goodcodeforfun.cleancitybattery.network.action.GET_LIST_LOCATIONS";
-    public static final String ACTION_GET_LIST_TYPES =
-            "com.goodcodeforfun.cleancitybattery.network.action.GET_LIST_TYPES";
     public static final String ACTION_POST_LOCATION =
             "com.goodcodeforfun.cleancitybattery.network.action.POST_LOCATION";
     public static final String ACTION_BROADCAST =
@@ -40,7 +36,11 @@ public class NetworkService extends IntentService {
             "com.goodcodeforfun.cleancitybattery.network.extra.LOCATION_DB_ID";
     public static final String EXTRA_RESPONCE_MESSAGE =
             "com.goodcodeforfun.cleancitybattery.network.MESSAGE";
-    LocationsUpdateEvent lastUpdate;
+    private static final String ACTION_GET_LIST_LOCATIONS =
+            "com.goodcodeforfun.cleancitybattery.network.action.GET_LIST_LOCATIONS";
+    private static final String ACTION_GET_LIST_TYPES =
+            "com.goodcodeforfun.cleancitybattery.network.action.GET_LIST_TYPES";
+    private LocationsUpdateEvent lastUpdate;
 
     public NetworkService() {
         super("NetworkService");
@@ -67,7 +67,7 @@ public class NetworkService extends IntentService {
         context.startService(intent);
     }
 
-    public static boolean contains(String test) {
+    private static boolean contains(String test) {
         for (MainActivity.LocationType c : MainActivity.LocationType.values()) {
             if (c.name().equals(test)) {
                 return true;

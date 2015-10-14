@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements
     private final PointsMapFragment mPointsMapFragment = new PointsMapFragment();
     private final PointsListFragment mPointsListFragment = new PointsListFragment();
     private final LocationDetailsFragment mLocationDetailsFragment = new LocationDetailsFragment();
-    private HashMap<MenuItem, String> CUSTOM_TYPES = new HashMap<>();
+    private final HashMap<MenuItem, String> CUSTOM_TYPES = new HashMap<>();
     private int counter = 0;
     private DrawerLayout mDrawerLayout;
     private Toolbar mToolbar;
@@ -75,7 +75,8 @@ public class MainActivity extends AppCompatActivity implements
     private LoaderManager mLoaderManager;
     private WeakReference<MainActivity> mainActivityWeakReference;
     private String mCurrentLocationType;
-    private final LoaderManager.LoaderCallbacks<Cursor> mLocationLoaderCallbacks = new LoaderManager.LoaderCallbacks<Cursor>() {
+    private final LoaderManager.LoaderCallbacks<Cursor> mLocationLoaderCallbacks =
+            new LoaderManager.LoaderCallbacks<Cursor>() {
 
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -108,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements
                             map.put(data.getString(data.getColumnIndexOrThrow(Location.COLUMN_API_ID)), position);
                         }
                         hideProgress();
-                        mPointsMapFragment.updateMap(mArrayList, boundsBuilder.build(), map);
+                        mPointsMapFragment.updateMap(map);
                     } else {
                         mPointsMapFragment.clearMap();
                         hideProgress();
@@ -133,8 +134,8 @@ public class MainActivity extends AppCompatActivity implements
         return null;
     }
 
-    public static <T> void initLoader(final int loaderId, final Bundle args, final LoaderManager.LoaderCallbacks<T> callbacks,
-                                      final LoaderManager loaderManager) {
+    private static <T> void initLoader(final int loaderId, final Bundle args, final LoaderManager.LoaderCallbacks<T> callbacks,
+                                       final LoaderManager loaderManager) {
         loaderManager.restartLoader(loaderId, args, callbacks);
         //need this to recreate it every damn time.
     }
@@ -435,7 +436,7 @@ public class MainActivity extends AppCompatActivity implements
         return super.onCreateOptionsMenu(menu);
     }
 
-    public void restartLocationsLoader() {
+    private void restartLocationsLoader() {
         if (null != mLoaderManager)
             initLoader(LOCATION_LOADER_ID, null, mLocationLoaderCallbacks, mLoaderManager);
     }
@@ -446,7 +447,7 @@ public class MainActivity extends AppCompatActivity implements
         paper(R.string.item_3),
         plastic(R.string.item_4);
 
-        private int resId;
+        private final int resId;
 
         LocationType(int resId) {
             this.resId = resId;

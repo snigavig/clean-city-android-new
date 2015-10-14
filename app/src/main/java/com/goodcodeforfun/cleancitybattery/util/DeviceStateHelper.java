@@ -23,10 +23,11 @@ public class DeviceStateHelper {
 
     private static final int RESPONSE_OK = 200;
     private static final int CONNECT_TIMEOUT = 1500;
+    private static final float DENSITY_COEFFICIENT = 160f;
 
     public static int convertDpToPixel(float dp) {
         DisplayMetrics metrics = Resources.getSystem().getDisplayMetrics();
-        float px = dp * (metrics.densityDpi / 160f);
+        float px = dp * (metrics.densityDpi / DENSITY_COEFFICIENT);
         return Math.round(px);
     }
 

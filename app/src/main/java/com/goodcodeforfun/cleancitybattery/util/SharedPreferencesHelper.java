@@ -8,7 +8,7 @@ import android.preference.PreferenceManager;
  * Created by snigavig on 05.09.15.
  */
 public class SharedPreferencesHelper {
-    public static final String LAST_UPDATE_TIME_KEY = "LAST_UPDATE_TIME";
+    private static final String LAST_UPDATE_TIME_KEY = "LAST_UPDATE_TIME";
 
 
     private final SharedPreferences prefs;
