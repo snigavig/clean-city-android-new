@@ -8,9 +8,6 @@ import com.activeandroid.annotation.Table;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Table(name = "Locations", id = BaseColumns._ID)
 public class Location extends Model {
     public static final String COLUMN_NAME = "Name";
@@ -46,10 +43,10 @@ public class Location extends Model {
     @Expose
     @Column(name = COLUMN_ADDRESS)
     private String address;
-    @Column(name = COLUMN_PHOTOS)
     @SerializedName("photos")
     @Expose
-    private List<String> photos = new ArrayList<>();
+    @Column(name = COLUMN_PHOTOS)
+    private String[] photos;
 
     public Location() {
         super();
@@ -60,7 +57,7 @@ public class Location extends Model {
      * @return
      * The photos
      */
-    public List<String> getPhotos() {
+    public String[] getPhotos() {
         return photos;
     }
 
@@ -69,11 +66,11 @@ public class Location extends Model {
      * @param photos
      * The photos
      */
-    public void setPhotos(List<String> photos) {
+    public void setPhotos(String[] photos) {
         this.photos = photos;
     }
 
-    public Location withPhotos(List<String> photos) {
+    public Location withPhotos(String[] photos) {
         this.photos = photos;
         return this;
     }

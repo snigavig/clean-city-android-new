@@ -50,12 +50,12 @@
             android:name="AA_DB_VERSION"
             android:value="3" />
         <meta-data
-            android:name="AA_SERIALIZERS"
-            android:value="com.goodcodeforfun.cleancitybattery.utils.StringArraySerializer" />
-        <meta-data
             android:name="AA_MODELS"
             android:value="com.goodcodeforfun.cleancitybattery.model.Location,
             com.goodcodeforfun.cleancitybattery.model.Type" />
+        <meta-data
+            android:name="AA_SERIALIZERS"
+            android:value="com.goodcodeforfun.cleancitybattery.util.StringArraySerializer" />
 
         <activity android:name=".activity.SplashActivity">
             <intent-filter>

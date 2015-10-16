@@ -46,7 +46,6 @@ import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,8 +61,8 @@ public class MainActivity extends AppCompatActivity implements
     private final Handler mDrawerActionHandler = new Handler();
     private final PointsMapFragment mPointsMapFragment = new PointsMapFragment();
     private final PointsListFragment mPointsListFragment = new PointsListFragment();
-    private final LocationDetailsFragment mLocationDetailsFragment = new LocationDetailsFragment();
     private final HashMap<MenuItem, String> CUSTOM_TYPES = new HashMap<>();
+    private LocationDetailsFragment mLocationDetailsFragment = new LocationDetailsFragment();
     private int counter = 0;
     private DrawerLayout mDrawerLayout;
     private Toolbar mToolbar;
@@ -96,7 +95,6 @@ public class MainActivity extends AppCompatActivity implements
                 if (null != data) {
                     if (data.getCount() != 0) {
                         LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
-                        ArrayList<LatLng> mArrayList = new ArrayList<>();
                         HashMap<String, LatLng> map = new HashMap<>();
                         LatLng position;
                         for (data.moveToFirst(); !data.isAfterLast(); data.moveToNext()) {
@@ -105,7 +103,6 @@ public class MainActivity extends AppCompatActivity implements
                                     data.getDouble(data.getColumnIndex(Location.COLUMN_LONGTITUDE))
                             );
                             boundsBuilder.include(position);
-                            mArrayList.add(position);
                             map.put(data.getString(data.getColumnIndexOrThrow(Location.COLUMN_API_ID)), position);
                         }
                         hideProgress();
@@ -143,6 +140,11 @@ public class MainActivity extends AppCompatActivity implements
     public LocationDetailsFragment getLocationDetailsFragment() {
         return mLocationDetailsFragment;
     }
+
+    public void setLocationDetailsFragment(LocationDetailsFragment fragment) {
+        mLocationDetailsFragment = fragment;
+    }
+
 
     public FloatingActionButton getFloatingActionButton() {
         return mFloatingActionButton;

@@ -13,6 +13,7 @@ import com.goodcodeforfun.cleancitybattery.network.CleanCityApiService;
 import com.goodcodeforfun.cleancitybattery.network.NetworkService;
 import com.goodcodeforfun.cleancitybattery.util.EventBusHelper;
 import com.goodcodeforfun.cleancitybattery.util.SharedPreferencesHelper;
+import com.goodcodeforfun.cleancitybattery.util.StringArraySerializer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.squareup.okhttp.OkHttpClient;
@@ -59,7 +60,7 @@ public class CleanCityApplication extends Application {
 
     public CleanCityApiService getNetworkService() {
         if (null == networkService) {
-            Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+            Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().serializeNulls().create();
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(FULL_URL)
                     .addConverterFactory(GsonConverterFactory.create(gson))
@@ -91,6 +92,7 @@ public class CleanCityApplication extends Application {
         Configuration.Builder configurationBuilder = new Configuration.Builder(getContext().getApplicationContext());
         configurationBuilder.addModelClass(Location.class);
         configurationBuilder.addModelClass(Type.class);
+        configurationBuilder.addTypeSerializer(StringArraySerializer.class);
         ActiveAndroid.initialize(configurationBuilder.create());
         mSharedPreferencesHelper = new SharedPreferencesHelper(getContext().getApplicationContext());
         //TODO: Move to scheduler

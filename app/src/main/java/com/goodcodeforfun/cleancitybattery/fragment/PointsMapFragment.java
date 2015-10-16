@@ -14,6 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.goodcodeforfun.cleancitybattery.CleanCityApplication;
 import com.goodcodeforfun.cleancitybattery.R;
@@ -43,7 +44,12 @@ public class PointsMapFragment extends Fragment implements OnMapReadyCallback, G
     private final SlidingUpPanelLayout.PanelSlideListener slideListener = new SlidingUpPanelLayout.PanelSlideListener() {
         @Override
         public void onPanelSlide(View panel, float slideOffset) {
-            mainActivityWeakReference.get().getLocationDetailsFragment().getArrow().setRotation(180 * slideOffset);
+            if (slideOffset < 1 || slideOffset > 0) {
+                ImageView arrow = mainActivityWeakReference.get().getLocationDetailsFragment().getArrow();
+                if (null != arrow) {
+                    arrow.setRotation(180 * slideOffset);
+                }
+            }
         }
 
 
@@ -222,6 +228,11 @@ public class PointsMapFragment extends Fragment implements OnMapReadyCallback, G
         getGoogleMap().getUiSettings().setMapToolbarEnabled(true);
         mLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
         mainActivityWeakReference.get().getFloatingActionButton().hide();
+        mainActivityWeakReference.get().setLocationDetailsFragment(new LocationDetailsFragment());
+        mainActivityWeakReference.get().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.contentDetails, mainActivityWeakReference.get().getLocationDetailsFragment())
+                .commit();
         mainActivityWeakReference.get().getLocationDetailsFragment().setCurrentLocation(marker.getSnippet());
         //not sure about legitimacy of this, but works
         return false;
