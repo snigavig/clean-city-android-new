@@ -18,10 +18,12 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import com.activeandroid.content.ContentProvider;
@@ -68,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements
     private Toolbar mToolbar;
     private ProgressBar mProgressBar;
     private ActionBarDrawerToggle mDrawerToggle;
+    private ImageView mAvatar;
     private FloatingActionButton mFloatingActionButton;
     private Menu mMenu;
     private int mNavItemId;
@@ -175,7 +178,6 @@ public class MainActivity extends AppCompatActivity implements
         mainActivityWeakReference = new WeakReference<>(this);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-
         IntentFilter statusIntentFilter = new IntentFilter(
                 NetworkService.ACTION_BROADCAST);
 
@@ -202,6 +204,27 @@ public class MainActivity extends AppCompatActivity implements
 
         // listen for navigation events
         NavigationView navigationView = (NavigationView) findViewById(R.id.navigation);
+
+
+        LinearLayout headerView = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.navigation_header, null);
+
+        mAvatar = (ImageView) headerView.findViewById(R.id.avatarImageView);
+        Picasso.with(this).load(R.drawable.cat_default_avatar).into(mAvatar);
+        mAvatar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (COUNTER_GOAL != counter) {
+                    counter++;
+                } else {
+                    counter = 0;
+                    Intent intent = new Intent(mainActivityWeakReference.get(), MiniGamesActivity.class);
+                    startActivity(intent);
+                }
+            }
+        });
+
+        navigationView.addHeaderView(headerView);
+
         navigationView.setNavigationItemSelectedListener(this);
         mMenu = navigationView.getMenu();
 
@@ -230,21 +253,8 @@ public class MainActivity extends AppCompatActivity implements
 
         navigate(mNavItemId);
 
-        ImageView avatar = (ImageView) findViewById(R.id.avatarImageView);
-        Picasso.with(this).load(R.drawable.cat_default_avatar).into(avatar);
-        avatar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (COUNTER_GOAL != counter) {
-                    counter++;
-                } else {
-                    counter = 0;
-                    Intent intent = new Intent(mainActivityWeakReference.get(), MiniGamesActivity.class);
-                    startActivity(intent);
-                }
-            }
-        });
     }
+
 
     private void setDrawerIndicator() {
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.open,

@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import com.goodcodeforfun.cleancitybattery.CleanCityApplication;
 import com.goodcodeforfun.cleancitybattery.R;
 import com.goodcodeforfun.cleancitybattery.activity.MainActivity;
+import com.goodcodeforfun.cleancitybattery.model.MyClusterItem;
 import com.goodcodeforfun.cleancitybattery.view.ClickableMapView;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -28,6 +29,9 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.android.clustering.Cluster;
+import com.google.maps.android.clustering.ClusterManager;
+import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.lang.ref.WeakReference;
@@ -72,6 +76,7 @@ public class PointsMapFragment extends Fragment implements OnMapReadyCallback, G
         public void onPanelHidden(View panel) {
         }
     };
+    private ClusterManager<MyClusterItem> mClusterManager;
     private GoogleMap mGoogleMap;
     private ClickableMapView mapView;
     private SlidingUpPanelLayout mLayout;
@@ -104,11 +109,18 @@ public class PointsMapFragment extends Fragment implements OnMapReadyCallback, G
 
             for (Map.Entry<String, LatLng> entry : map.entrySet()
                     ) {
-                mGoogleMap.addMarker(new MarkerOptions()
-                                .position(entry.getValue())
-                                .snippet(entry.getKey())
-                                .icon(BitmapDescriptorFactory.fromBitmap(markerBitmap))
-                );
+
+                LatLng position = entry.getValue();
+                double lat = position.latitude;
+                double lng = position.longitude;
+                MyClusterItem item = new MyClusterItem(lat, lng, entry.getKey(), BitmapDescriptorFactory.fromBitmap(markerBitmap));
+                mClusterManager.addItem(item);
+//
+//                mGoogleMap.addMarker(new MarkerOptions()
+//                                .position(entry.getValue())
+//                                .snippet(entry.getKey())
+//                                .icon(BitmapDescriptorFactory.fromBitmap(markerBitmap))
+//                );
             }
         }
     }
@@ -173,7 +185,9 @@ public class PointsMapFragment extends Fragment implements OnMapReadyCallback, G
                         }
                     });
         }
-        //mainActivityWeakReference.get().restartLocationsLoader();
+        mClusterManager = new ClusterManager<>(CleanCityApplication.getContext(), mGoogleMap);
+        mClusterManager.setRenderer(new MarkerRenderer());
+        mGoogleMap.setOnCameraChangeListener(mClusterManager);
     }
 
     private void moveMapCameraToPosition(android.location.Location location) {
@@ -225,16 +239,50 @@ public class PointsMapFragment extends Fragment implements OnMapReadyCallback, G
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        getGoogleMap().getUiSettings().setMapToolbarEnabled(true);
-        mLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-        mainActivityWeakReference.get().getFloatingActionButton().hide();
-        mainActivityWeakReference.get().setLocationDetailsFragment(new LocationDetailsFragment());
-        mainActivityWeakReference.get().getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.contentDetails, mainActivityWeakReference.get().getLocationDetailsFragment())
-                .commit();
-        mainActivityWeakReference.get().getLocationDetailsFragment().setCurrentLocation(marker.getSnippet());
-        //not sure about legitimacy of this, but works
-        return false;
+        if (null != marker.getSnippet()) {
+            getGoogleMap().getUiSettings().setMapToolbarEnabled(true);
+            mLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+            mainActivityWeakReference.get().getFloatingActionButton().hide();
+            mainActivityWeakReference.get().setLocationDetailsFragment(new LocationDetailsFragment());
+            mainActivityWeakReference.get().getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.contentDetails, mainActivityWeakReference.get().getLocationDetailsFragment())
+                    .commit();
+            mainActivityWeakReference.get().getLocationDetailsFragment().setCurrentLocation(marker.getSnippet());
+            //not sure about legitimacy of this, but works
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private class MarkerRenderer extends DefaultClusterRenderer<MyClusterItem> {
+        //private final IconGenerator mIconGenerator = new IconGenerator(CleanCityApplication.getContext());
+        //private final IconGenerator mClusterIconGenerator = new IconGenerator(CleanCityApplication.getContext());
+        //private final ImageView mImageView;
+        //private final ImageView mClusterImageView;
+        //private final int mDimension;
+
+
+        public MarkerRenderer() {
+            super(CleanCityApplication.getContext(), mGoogleMap, mClusterManager);
+            //mImageView = new ImageView(CleanCityApplication.getContext());
+            //mIconGenerator.setContentView(mImageView);
+        }
+
+
+        @Override
+        protected void onBeforeClusterItemRendered(MyClusterItem person, MarkerOptions markerOptions) {
+            // Draw a single person.
+            // Set the info window to show their name.
+            //mImageView.setImageResource(person.profilePhoto);
+            markerOptions.icon(person.getBitmap()).snippet(person.getSnippet());
+        }
+
+        @Override
+        protected boolean shouldRenderAsCluster(Cluster cluster) {
+            // Always render clusters.
+            return cluster.getSize() >= 2;
+        }
     }
 }
