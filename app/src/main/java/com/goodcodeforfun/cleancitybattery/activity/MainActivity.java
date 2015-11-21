@@ -1,13 +1,11 @@
 package com.goodcodeforfun.cleancitybattery.activity;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -71,7 +69,8 @@ public class MainActivity extends AppCompatActivity implements
     private ProgressBar mProgressBar;
     private ActionBarDrawerToggle mDrawerToggle;
     private ImageView mAvatar;
-    private FloatingActionButton mFloatingActionButton;
+    //TODO: uncomment when FAB functionality is back
+    //private FloatingActionButton mFloatingActionButton;
     private Menu mMenu;
     private int mNavItemId;
     private LoaderManager mLoaderManager;
@@ -148,10 +147,10 @@ public class MainActivity extends AppCompatActivity implements
         mLocationDetailsFragment = fragment;
     }
 
-
-    public FloatingActionButton getFloatingActionButton() {
-        return mFloatingActionButton;
-    }
+    //TODO: uncomment when FAB functionality is back
+//    public FloatingActionButton getFloatingActionButton() {
+//        return mFloatingActionButton;
+//    }
 
     @Override
     protected void onStart() {
@@ -182,13 +181,17 @@ public class MainActivity extends AppCompatActivity implements
                 NetworkService.ACTION_BROADCAST);
 
         ErrorHandler.ResponseReceiver responseReceiver =
-                new ErrorHandler.ResponseReceiver(findViewById(R.id.button_add_location));
+                //TODO: uncomment when FAB functionality is back
+                //new ErrorHandler.ResponseReceiver(findViewById(R.id.button_add_location));
+                new ErrorHandler.ResponseReceiver(null);
+
         LocalBroadcastManager.getInstance(this).registerReceiver(
                 responseReceiver,
                 statusIntentFilter);
 
-        mFloatingActionButton = (FloatingActionButton) findViewById(R.id.button_add_location);
-        mFloatingActionButton.setOnClickListener(this);
+        //TODO: uncomment when FAB functionality is back
+        //mFloatingActionButton = (FloatingActionButton) findViewById(R.id.button_add_location);
+        //mFloatingActionButton.setOnClickListener(this);
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
@@ -217,8 +220,9 @@ public class MainActivity extends AppCompatActivity implements
                     counter++;
                 } else {
                     counter = 0;
-                    Intent intent = new Intent(mainActivityWeakReference.get(), MiniGamesActivity.class);
-                    startActivity(intent);
+                    //TODO: uncomment when the game is ready.
+                    //Intent intent = new Intent(mainActivityWeakReference.get(), MiniGamesActivity.class);
+                    //startActivity(intent);
                 }
             }
         });
@@ -376,10 +380,11 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.button_add_location:
-                Intent intent = new Intent(this, AddLocationActivity.class);
-                startActivity(intent);
-                break;
+            //TODO: uncomment when FAB functionality is back
+//            case R.id.button_add_location:
+//                Intent intent = new Intent(this, AddLocationActivity.class);
+//                startActivity(intent);
+//                break;
             default:
                 //meh
         }
@@ -427,7 +432,8 @@ public class MainActivity extends AppCompatActivity implements
         if (SlidingUpPanelLayout.PanelState.HIDDEN != mPointsMapFragment.getLayout().getPanelState()) {
             mPointsMapFragment.getLayout().setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
             mPointsMapFragment.getGoogleMap().getUiSettings().setMapToolbarEnabled(false);
-            getFloatingActionButton().show();
+            //TODO: uncomment when FAB functionality is back
+            //getFloatingActionButton().show();
         }
     }
 

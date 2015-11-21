@@ -115,12 +115,6 @@ public class PointsMapFragment extends Fragment implements OnMapReadyCallback, G
                 double lng = position.longitude;
                 MyClusterItem item = new MyClusterItem(lat, lng, entry.getKey(), BitmapDescriptorFactory.fromBitmap(markerBitmap));
                 mClusterManager.addItem(item);
-//
-//                mGoogleMap.addMarker(new MarkerOptions()
-//                                .position(entry.getValue())
-//                                .snippet(entry.getKey())
-//                                .icon(BitmapDescriptorFactory.fromBitmap(markerBitmap))
-//                );
             }
         }
     }
@@ -242,7 +236,8 @@ public class PointsMapFragment extends Fragment implements OnMapReadyCallback, G
         if (null != marker.getSnippet()) {
             getGoogleMap().getUiSettings().setMapToolbarEnabled(true);
             mLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-            mainActivityWeakReference.get().getFloatingActionButton().hide();
+            //TODO: uncomment when FAB functionality is back
+            //mainActivityWeakReference.get().getFloatingActionButton().hide();
             mainActivityWeakReference.get().setLocationDetailsFragment(new LocationDetailsFragment());
             mainActivityWeakReference.get().getSupportFragmentManager()
                     .beginTransaction()
@@ -257,31 +252,19 @@ public class PointsMapFragment extends Fragment implements OnMapReadyCallback, G
     }
 
     private class MarkerRenderer extends DefaultClusterRenderer<MyClusterItem> {
-        //private final IconGenerator mIconGenerator = new IconGenerator(CleanCityApplication.getContext());
-        //private final IconGenerator mClusterIconGenerator = new IconGenerator(CleanCityApplication.getContext());
-        //private final ImageView mImageView;
-        //private final ImageView mClusterImageView;
-        //private final int mDimension;
-
 
         public MarkerRenderer() {
             super(CleanCityApplication.getContext(), mGoogleMap, mClusterManager);
-            //mImageView = new ImageView(CleanCityApplication.getContext());
-            //mIconGenerator.setContentView(mImageView);
         }
 
 
         @Override
-        protected void onBeforeClusterItemRendered(MyClusterItem person, MarkerOptions markerOptions) {
-            // Draw a single person.
-            // Set the info window to show their name.
-            //mImageView.setImageResource(person.profilePhoto);
-            markerOptions.icon(person.getBitmap()).snippet(person.getSnippet());
+        protected void onBeforeClusterItemRendered(MyClusterItem iten, MarkerOptions markerOptions) {
+            markerOptions.icon(iten.getBitmap()).snippet(iten.getSnippet());
         }
 
         @Override
         protected boolean shouldRenderAsCluster(Cluster cluster) {
-            // Always render clusters.
             return cluster.getSize() >= 2;
         }
     }
