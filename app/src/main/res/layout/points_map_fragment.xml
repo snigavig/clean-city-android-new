@@ -8,7 +8,7 @@
     android:gravity="bottom"
     sothree:umanoInitialState="hidden"
     sothree:umanoPanelHeight="68dp"
-    sothree:umanoParalaxOffset="200dp"
+    sothree:umanoParallaxOffset="200dp"
     sothree:umanoShadowHeight="4dp">
 
     <FrameLayout

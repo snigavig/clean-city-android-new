@@ -84,11 +84,17 @@ public class MainActivity extends AppCompatActivity implements
             if (null != mPointsMapFragment && mPointsMapFragment.isVisible())
                 mPointsMapFragment.clearMap();
             showProgress();
-            return new CursorLoader(MainActivity.this,
-                    ContentProvider.createUri(Location.class, null),
-                    null, "Type = ?", new String[]{mCurrentLocationType}, null
-            );
-
+            if (mCurrentLocationType.equals(LocationType.all.name())) {
+                return new CursorLoader(MainActivity.this,
+                        ContentProvider.createUri(Location.class, null),
+                        null, null, null, null
+                );
+            } else {
+                return new CursorLoader(MainActivity.this,
+                        ContentProvider.createUri(Location.class, null),
+                        null, "Type = ?", new String[]{mCurrentLocationType}, null
+                );
+            }
         }
 
         @Override
@@ -139,6 +145,10 @@ public class MainActivity extends AppCompatActivity implements
         //need this to recreate it every damn time.
     }
 
+    public DrawerLayout getDrawerLayout() {
+        return mDrawerLayout;
+    }
+
     public LocationDetailsFragment getLocationDetailsFragment() {
         return mLocationDetailsFragment;
     }
@@ -183,7 +193,7 @@ public class MainActivity extends AppCompatActivity implements
         ErrorHandler.ResponseReceiver responseReceiver =
                 //TODO: uncomment when FAB functionality is back
                 //new ErrorHandler.ResponseReceiver(findViewById(R.id.button_add_location));
-                new ErrorHandler.ResponseReceiver(null);
+                new ErrorHandler.ResponseReceiver(mDrawerLayout);
 
         LocalBroadcastManager.getInstance(this).registerReceiver(
                 responseReceiver,
@@ -305,6 +315,8 @@ public class MainActivity extends AppCompatActivity implements
 
     private void navigate(final int itemId) {
         switch (itemId) {
+            case R.id.drawer_item_0:
+                mCurrentLocationType = LocationType.all.name();
             case R.id.drawer_item_1:
                 mCurrentLocationType = LocationType.battery.name();
                 break;
@@ -459,7 +471,16 @@ public class MainActivity extends AppCompatActivity implements
             initLoader(LOCATION_LOADER_ID, null, mLocationLoaderCallbacks, mLoaderManager);
     }
 
+    public WeakReference<MainActivity> getMainActivityWeakReference() {
+        return mainActivityWeakReference;
+    }
+
+    public void setMainActivityWeakReference(WeakReference<MainActivity> mainActivityWeakReference) {
+        this.mainActivityWeakReference = mainActivityWeakReference;
+    }
+
     public enum LocationType {
+        all(R.string.item_0),
         battery(R.string.item_1),
         glass(R.string.item_2),
         paper(R.string.item_3),

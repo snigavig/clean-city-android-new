@@ -31,6 +31,11 @@ public class DeviceStateHelper {
         return Math.round(px);
     }
 
+    public static Boolean isLocation() {
+
+        return false;
+    }
+
     private static Boolean isNetworkInterfaceConnected() {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) CleanCityApplication.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);

@@ -8,9 +8,10 @@ import android.view.View;
  */
 public class SnackbarHelper {
     public static void show(View mParentView, String message) {
-        Snackbar
-                .make(mParentView, message, Snackbar.LENGTH_LONG)
-                .setAction("", null)
-                .show(); // Don’t forget to show!
+        if (null != mParentView)
+            Snackbar
+                    .make(mParentView, message, Snackbar.LENGTH_LONG)
+                    .setAction("", null)
+                    .show(); // Don’t forget to show!
     }
 }

@@ -1,11 +1,14 @@
 package com.goodcodeforfun.cleancitybattery.fragment;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
@@ -20,6 +23,7 @@ import com.goodcodeforfun.cleancitybattery.CleanCityApplication;
 import com.goodcodeforfun.cleancitybattery.R;
 import com.goodcodeforfun.cleancitybattery.activity.MainActivity;
 import com.goodcodeforfun.cleancitybattery.model.MyClusterItem;
+import com.goodcodeforfun.cleancitybattery.util.SnackbarHelper;
 import com.goodcodeforfun.cleancitybattery.view.ClickableMapView;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -37,6 +41,9 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
@@ -44,6 +51,8 @@ import io.nlopez.smartlocation.SmartLocation;
 public class PointsMapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
     private static final String MAP_VIEW_SAVE_STATE = "mapViewSaveState";
     private static final int ZOOM = 13;
+    private static final long HOUR_IN_MILLIS = 3600000;
+    private static final long SECOND_IN_MILLIS = 1000;
     private WeakReference<MainActivity> mainActivityWeakReference;
     private final SlidingUpPanelLayout.PanelSlideListener slideListener = new SlidingUpPanelLayout.PanelSlideListener() {
         @Override
@@ -162,14 +171,27 @@ public class PointsMapFragment extends Fragment implements OnMapReadyCallback, G
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            String[] permissions = new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
+            ActivityCompat.requestPermissions(getActivity(), permissions, 0);
+            return;
+        }
         googleMap.setMyLocationEnabled(true);
         googleMap.setOnMarkerClickListener(this);
         mGoogleMap = googleMap;
 
         Location lastLocation = SmartLocation.with(mainActivityWeakReference.get()).location().getLastLocation();
-        if (null != lastLocation) {
+        if (null != lastLocation && (System.currentTimeMillis() - lastLocation.getTime()) < HOUR_IN_MILLIS) {
             moveMapCameraToPosition(lastLocation);
         } else {
+            SnackbarHelper.show(mainActivityWeakReference.get().getDrawerLayout(), getString(R.string.searching));
             SmartLocation.with(CleanCityApplication.getContext()).location()
                     .oneFix()
                     .start(new OnLocationUpdatedListener() {
@@ -178,6 +200,17 @@ public class PointsMapFragment extends Fragment implements OnMapReadyCallback, G
                             moveMapCameraToPosition(location);
                         }
                     });
+            final ScheduledExecutorService worker = Executors.newSingleThreadScheduledExecutor();
+
+            Runnable task = new Runnable() {
+                public void run() {
+                    Location lastLocation = SmartLocation.with(mainActivityWeakReference.get()).location().getLastLocation();
+                    if (null != lastLocation && (System.currentTimeMillis() - lastLocation.getTime()) > SECOND_IN_MILLIS * 15) {
+                        SnackbarHelper.show(mainActivityWeakReference.get().getDrawerLayout(), getString(R.string.location_not_found));
+                    }
+                }
+            };
+            worker.schedule(task, 10, TimeUnit.SECONDS);
         }
         mClusterManager = new ClusterManager<>(CleanCityApplication.getContext(), mGoogleMap);
         mClusterManager.setRenderer(new MarkerRenderer());
