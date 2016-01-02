@@ -21,7 +21,8 @@ public class ErrorHandler {
     }
 
     public static void handleRetrofitError(IOException e) {
-        Log.d(CleanCityApplication.LOG_TAG, e.getMessage());
+        if (null != e.getMessage())
+            Log.d(CleanCityApplication.LOG_TAG, e.getMessage());
         broadcastMessage("Ой, вибачте, невеличкі проблеми");
     }
 

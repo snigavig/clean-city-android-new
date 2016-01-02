@@ -1,5 +1,8 @@
 package com.goodcodeforfun.cleancitybattery.activity;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -16,6 +19,18 @@ public class SplashActivity extends AppCompatActivity {
 
     private ProgressBar mProgressBar;
 
+    public static void restart(Context context) {
+        int delay = 1;
+        Intent restartIntent = context.getPackageManager()
+                .getLaunchIntentForPackage(context.getPackageName());
+        PendingIntent intent = PendingIntent.getActivity(
+                context, 0,
+                restartIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        manager.set(AlarmManager.RTC, System.currentTimeMillis() + delay, intent);
+        System.exit(2);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         CleanCityApplication app;
@@ -23,8 +38,7 @@ public class SplashActivity extends AppCompatActivity {
         if (null != app && app.isInitialised()) {
             startMainActivity();
         } else {
-            app = new CleanCityApplication(getBaseContext());
-            app.onCreate();
+            restart(this);
         }
         super.onCreate(savedInstanceState);
         EventBusHelper.register(this);

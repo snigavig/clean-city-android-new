@@ -116,6 +116,9 @@ public class PointsMapFragment extends Fragment implements OnMapReadyCallback, G
                 shape.draw(canvas);
             }
 
+            mClusterManager = new ClusterManager<>(CleanCityApplication.getContext(), mGoogleMap);
+            mClusterManager.setRenderer(new MarkerRenderer());
+
             for (Map.Entry<String, LatLng> entry : map.entrySet()
                     ) {
 
@@ -165,56 +168,45 @@ public class PointsMapFragment extends Fragment implements OnMapReadyCallback, G
         mapView.onCreate(mapViewSavedInstanceState);
         mLayout = (SlidingUpPanelLayout) v.findViewById(R.id.sliding_layout);
         mLayout.setPanelSlideListener(slideListener);
-        mapView.getMapAsync(this);
         return v;
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            String[] permissions = new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
-            ActivityCompat.requestPermissions(getActivity(), permissions, 0);
-            return;
-        }
-        googleMap.setMyLocationEnabled(true);
         googleMap.setOnMarkerClickListener(this);
         mGoogleMap = googleMap;
+        //For the sake of yet stupid error checker.
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            googleMap.setMyLocationEnabled(true);
+            Location lastLocation = SmartLocation.with(mainActivityWeakReference.get()).location().getLastLocation();
+            if (null != lastLocation && (System.currentTimeMillis() - lastLocation.getTime()) < HOUR_IN_MILLIS) {
+                moveMapCameraToPosition(lastLocation);
+            } else {
+                SnackbarHelper.show(mainActivityWeakReference.get().getDrawerLayout(), getString(R.string.searching));
+                SmartLocation.with(CleanCityApplication.getContext()).location()
+                        .oneFix()
+                        .start(new OnLocationUpdatedListener() {
+                            @Override
+                            public void onLocationUpdated(android.location.Location location) {
+                                moveMapCameraToPosition(location);
+                            }
+                        });
+                final ScheduledExecutorService worker = Executors.newSingleThreadScheduledExecutor();
 
-        Location lastLocation = SmartLocation.with(mainActivityWeakReference.get()).location().getLastLocation();
-        if (null != lastLocation && (System.currentTimeMillis() - lastLocation.getTime()) < HOUR_IN_MILLIS) {
-            moveMapCameraToPosition(lastLocation);
-        } else {
-            SnackbarHelper.show(mainActivityWeakReference.get().getDrawerLayout(), getString(R.string.searching));
-            SmartLocation.with(CleanCityApplication.getContext()).location()
-                    .oneFix()
-                    .start(new OnLocationUpdatedListener() {
-                        @Override
-                        public void onLocationUpdated(android.location.Location location) {
-                            moveMapCameraToPosition(location);
+                Runnable task = new Runnable() {
+                    public void run() {
+                        Location lastLocation = SmartLocation.with(mainActivityWeakReference.get()).location().getLastLocation();
+                        if (null != lastLocation && (System.currentTimeMillis() - lastLocation.getTime()) > SECOND_IN_MILLIS * 15) {
+                            SnackbarHelper.show(mainActivityWeakReference.get().getDrawerLayout(), getString(R.string.location_not_found));
                         }
-                    });
-            final ScheduledExecutorService worker = Executors.newSingleThreadScheduledExecutor();
-
-            Runnable task = new Runnable() {
-                public void run() {
-                    Location lastLocation = SmartLocation.with(mainActivityWeakReference.get()).location().getLastLocation();
-                    if (null != lastLocation && (System.currentTimeMillis() - lastLocation.getTime()) > SECOND_IN_MILLIS * 15) {
-                        SnackbarHelper.show(mainActivityWeakReference.get().getDrawerLayout(), getString(R.string.location_not_found));
                     }
-                }
-            };
-            worker.schedule(task, 10, TimeUnit.SECONDS);
+                };
+                worker.schedule(task, 10, TimeUnit.SECONDS);
+            }
+            if (null != mClusterManager) {
+                mGoogleMap.setOnCameraChangeListener(mClusterManager);
+            }
         }
-        mClusterManager = new ClusterManager<>(CleanCityApplication.getContext(), mGoogleMap);
-        mClusterManager.setRenderer(new MarkerRenderer());
-        mGoogleMap.setOnCameraChangeListener(mClusterManager);
     }
 
     private void moveMapCameraToPosition(android.location.Location location) {
@@ -248,8 +240,10 @@ public class PointsMapFragment extends Fragment implements OnMapReadyCallback, G
 
     @Override
     public void onResume() {
-        if (null != mapView)
+        if (null != mapView) {
             mapView.onResume();
+            mapView.getMapAsync(this);
+        }
         super.onResume();
     }
 

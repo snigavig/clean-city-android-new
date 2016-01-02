@@ -87,23 +87,7 @@ public class CleanCityApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        EventBusHelper.register(this);
-        mInstance = this;
-        Configuration.Builder configurationBuilder = new Configuration.Builder(getContext().getApplicationContext());
-        configurationBuilder.addModelClass(Location.class);
-        configurationBuilder.addModelClass(Type.class);
-        configurationBuilder.addTypeSerializer(StringArraySerializer.class);
-        ActiveAndroid.initialize(configurationBuilder.create());
-        mSharedPreferencesHelper = new SharedPreferencesHelper(getContext().getApplicationContext());
-        //TODO: Move to scheduler
-        NetworkService.startActionGetListTypes(getContext());
-        NetworkService.startActionGetListLocations(getContext());
-
-        isInitialised = true;
-        lastUpdate = new ApplicationLoadedEvent(
-                ApplicationLoadedEvent.ApplicationLoadedType.COMPLETED,
-                ApplicationLoadedEvent.OK_RESULT_CODE);
-        EventBusHelper.getBus().post(lastUpdate);
+        init();
     }
 
     public boolean isInitialised() {
@@ -121,5 +105,25 @@ public class CleanCityApplication extends Application {
     public void onTerminate() {
         super.onTerminate();
         EventBusHelper.unregister(this);
+    }
+
+    public void init() {
+        EventBusHelper.register(this);
+        mInstance = this;
+        Configuration.Builder configurationBuilder = new Configuration.Builder(getContext().getApplicationContext());
+        configurationBuilder.addModelClass(Location.class);
+        configurationBuilder.addModelClass(Type.class);
+        configurationBuilder.addTypeSerializer(StringArraySerializer.class);
+        ActiveAndroid.initialize(configurationBuilder.create());
+        mSharedPreferencesHelper = new SharedPreferencesHelper(getContext().getApplicationContext());
+        //TODO: Move to scheduler
+        NetworkService.startActionGetListTypes(getContext());
+        NetworkService.startActionGetListLocations(getContext());
+
+        isInitialised = true;
+        lastUpdate = new ApplicationLoadedEvent(
+                ApplicationLoadedEvent.ApplicationLoadedType.COMPLETED,
+                ApplicationLoadedEvent.OK_RESULT_CODE);
+        EventBusHelper.getBus().post(lastUpdate);
     }
 }

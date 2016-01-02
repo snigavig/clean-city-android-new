@@ -1,12 +1,16 @@
 package com.goodcodeforfun.cleancitybattery.activity;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -121,6 +125,8 @@ public class MainActivity extends AppCompatActivity implements
                         SnackbarHelper.show(mPointsMapFragment.getView(), getString(R.string.no_points_warning));
                     }
                 }
+            } else {
+                restartLocationsLoader();
             }
         }
 
@@ -161,6 +167,13 @@ public class MainActivity extends AppCompatActivity implements
 //    public FloatingActionButton getFloatingActionButton() {
 //        return mFloatingActionButton;
 //    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkPermissions();
+    }
 
     @Override
     protected void onStart() {
@@ -250,6 +263,11 @@ public class MainActivity extends AppCompatActivity implements
         }
         setDrawerIndicator();
         // set up the hamburger icon to open and close the drawer
+        initFragments();
+
+    }
+
+    private void initFragments() {
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.contentMap, mPointsMapFragment)
@@ -266,9 +284,16 @@ public class MainActivity extends AppCompatActivity implements
                 .commit();
 
         navigate(mNavItemId);
-
     }
 
+    private void checkPermissions() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            String[] permissions = new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
+            ActivityCompat.requestPermissions(this, permissions, 0);
+        } else {
+            initFragments();
+        }
+    }
 
     private void setDrawerIndicator() {
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.open,
@@ -464,6 +489,11 @@ public class MainActivity extends AppCompatActivity implements
             }
         }
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     private void restartLocationsLoader() {
