@@ -118,7 +118,9 @@ public class PointsMapFragment extends Fragment implements OnMapReadyCallback, G
 
             mClusterManager = new ClusterManager<>(CleanCityApplication.getContext(), mGoogleMap);
             mClusterManager.setRenderer(new MarkerRenderer());
-
+            if (null != mGoogleMap) {
+                mGoogleMap.setOnCameraChangeListener(mClusterManager);
+            }
             for (Map.Entry<String, LatLng> entry : map.entrySet()
                     ) {
 
@@ -202,9 +204,6 @@ public class PointsMapFragment extends Fragment implements OnMapReadyCallback, G
                     }
                 };
                 worker.schedule(task, 10, TimeUnit.SECONDS);
-            }
-            if (null != mClusterManager) {
-                mGoogleMap.setOnCameraChangeListener(mClusterManager);
             }
         }
     }

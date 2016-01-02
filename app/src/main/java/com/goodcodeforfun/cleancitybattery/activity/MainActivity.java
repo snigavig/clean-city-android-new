@@ -88,6 +88,7 @@ public class MainActivity extends AppCompatActivity implements
             if (null != mPointsMapFragment && mPointsMapFragment.isVisible())
                 mPointsMapFragment.clearMap();
             showProgress();
+
             if (mCurrentLocationType.equals(LocationType.all.name())) {
                 return new CursorLoader(MainActivity.this,
                         ContentProvider.createUri(Location.class, null),
@@ -103,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements
 
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-            if (null != mPointsMapFragment) {
+            if (null != mPointsMapFragment && mPointsMapFragment.isVisible()) {
                 if (null != data) {
                     if (data.getCount() != 0) {
                         LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
@@ -395,6 +396,10 @@ public class MainActivity extends AppCompatActivity implements
         if (item.getItemId() == android.support.v7.appcompat.R.id.home) {
             return mDrawerToggle.onOptionsItemSelected(item);
         }
+
+        if (item.getItemId() == R.id.action_refresh) {
+            restartLocationsLoader();
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -493,10 +498,10 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        //super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
-    private void restartLocationsLoader() {
+    public void restartLocationsLoader() {
         if (null != mLoaderManager)
             initLoader(LOCATION_LOADER_ID, null, mLocationLoaderCallbacks, mLoaderManager);
     }
