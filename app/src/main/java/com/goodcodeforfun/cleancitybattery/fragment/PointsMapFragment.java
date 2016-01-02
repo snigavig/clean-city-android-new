@@ -50,9 +50,10 @@ import io.nlopez.smartlocation.SmartLocation;
 
 public class PointsMapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
     private static final String MAP_VIEW_SAVE_STATE = "mapViewSaveState";
-    private static final int ZOOM = 13;
     private static final long HOUR_IN_MILLIS = 3600000;
     private static final long SECOND_IN_MILLIS = 1000;
+    private int DEFAULT_ZOOM = 13;
+    private int ZOOM = DEFAULT_ZOOM;
     private WeakReference<MainActivity> mainActivityWeakReference;
     private final SlidingUpPanelLayout.PanelSlideListener slideListener = new SlidingUpPanelLayout.PanelSlideListener() {
         @Override
@@ -130,6 +131,8 @@ public class PointsMapFragment extends Fragment implements OnMapReadyCallback, G
                 MyClusterItem item = new MyClusterItem(lat, lng, entry.getKey(), BitmapDescriptorFactory.fromBitmap(markerBitmap));
                 mClusterManager.addItem(item);
             }
+            Location lastLocation = SmartLocation.with(mainActivityWeakReference.get()).location().getLastLocation();
+            moveMapCameraToPosition(lastLocation);
         }
     }
 
@@ -213,6 +216,11 @@ public class PointsMapFragment extends Fragment implements OnMapReadyCallback, G
         if (null != mGoogleMap) {
             mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(position, ZOOM));
             SmartLocation.with(mainActivityWeakReference.get()).location().stop();
+            if (ZOOM == DEFAULT_ZOOM) {
+                ZOOM++;
+            } else {
+                ZOOM = DEFAULT_ZOOM;
+            }
         }
     }
 
